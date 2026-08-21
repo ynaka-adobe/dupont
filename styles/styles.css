@@ -332,15 +332,15 @@ main .section.highlight {
   padding: 40px 0;
 }
 
-body.intro main > div:nth-child(2) {
+main .section.intro {
   text-align: center;
 }
 
-body.intro main > div:nth-child(2) > div {
+main .section.intro > div {
   max-width: 860px;
 }
 
-body.intro main > div:nth-child(2) h2 {
+main .section.intro h2 {
   position: relative;
   margin: 0 0 40px;
   padding-bottom: 24px;
@@ -350,7 +350,7 @@ body.intro main > div:nth-child(2) h2 {
   color: var(--text-color);
 }
 
-body.intro main > div:nth-child(2) h2::after {
+main .section.intro h2::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -361,7 +361,7 @@ body.intro main > div:nth-child(2) h2::after {
   background-color: #e4001c;
 }
 
-body.intro main > div:nth-child(2) p {
+main .section.intro p {
   margin: 0;
   font-size: var(--body-font-size-xs);
   color: var(--dark-color);
