@@ -18,6 +18,15 @@
       "passConfig": true,
       "environments": ["preview", "live", "edit"],
       "includePaths": ["**"]
+    },
+    {
+      "id": "persona",
+      "title": "Persona",
+      "url": "https://labs.of1.live/of1?experiment=7c353d5f-bc17-42bf-9b41-4413d5ee2a75",
+      "isPalette": true,
+      "paletteRect": "top: 40px; right: 0; width: 400px; height: calc(100% - 40px);",
+      "environments": ["preview", "live", "edit"],
+      "includePaths": ["**"]
     }
   ]
 }
