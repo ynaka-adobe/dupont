@@ -1,8 +1,27 @@
+/**
+ * Ensures a slide has a dedicated image cell as its first child and a
+ * content cell as its last child. Authors sometimes place the image and
+ * the heading/text in the same column instead of two separate columns;
+ * split that single cell so the CSS's image/content layout still works.
+ * @param {HTMLElement} slide
+ */
+function normalizeSlide(slide) {
+  if (slide.children.length >= 2) return;
+  const cell = slide.firstElementChild;
+  const picture = cell?.querySelector('picture');
+  if (!picture) return;
+  const imgWrapper = picture.closest('p') || picture;
+  const imgCell = document.createElement('div');
+  imgCell.append(imgWrapper);
+  slide.insertBefore(imgCell, cell);
+}
+
 export default async function decorate(block) {
   const slides = [...block.children];
   if (slides.length === 0) return;
 
   slides.forEach((slide, i) => {
+    normalizeSlide(slide);
     slide.classList.add('hero-slide');
     if (i === 0) slide.classList.add('hero-slide-active');
   });

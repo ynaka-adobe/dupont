@@ -70,7 +70,8 @@
   box-sizing: border-box;
 }
 
-.hero h1 {
+.hero h1,
+.hero h2 {
   margin: 0 0 28px;
   max-width: 900px;
   color: var(--hero-text-color);
@@ -159,7 +160,8 @@
     --hero-pad-x: 24px;
   }
 
-  .hero h1 {
+  .hero h1,
+  .hero h2 {
     font-size: 34px;
     margin-bottom: 20px;
   }
@@ -168,13 +170,38 @@
 /* report variant: composite background image with dark text on its own
    light area, instead of a full-bleed dark-overlay carousel slide */
 .hero.report {
-  --hero-height: 560px;
   --hero-text-color: var(--text-color);
   --hero-overlay: none;
+
+  /* match the authored image's native aspect ratio instead of a fixed
+     height, so object-fit: cover doesn't crop into its built-in text area */
+  height: auto;
+  aspect-ratio: 1440 / 700;
 }
 
-.hero.report h1 {
-  max-width: 460px;
+/* the authored image bakes its own blank text area into the graphic
+   (roughly the left half, upper portion) instead of being a plain
+   edge-to-edge photo, so the content cell is sized/positioned in
+   percentages of the image to land inside that blank area at any
+   viewport width */
+.hero.report .hero-slide {
+  align-items: flex-start;
+}
+
+.hero.report .hero-slide > div:last-child {
+  max-width: 42%;
+  margin: 0;
+  padding: 12% 0 0 11%;
+}
+
+.hero.report p {
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+
+.hero.report h1,
+.hero.report h2 {
+  max-width: 100%;
   font-size: 32px;
   font-weight: 500;
 }
@@ -199,11 +226,8 @@
 }
 
 @media (width <= 900px) {
-  .hero.report {
-    --hero-height: 460px;
-  }
-
-  .hero.report h1 {
+  .hero.report h1,
+  .hero.report h2 {
     font-size: 26px;
   }
 }
