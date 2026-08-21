@@ -164,3 +164,46 @@
     margin-bottom: 20px;
   }
 }
+
+/* report variant: composite background image with dark text on its own
+   light area, instead of a full-bleed dark-overlay carousel slide */
+.hero.report {
+  --hero-height: 560px;
+  --hero-text-color: var(--text-color);
+  --hero-overlay: none;
+}
+
+.hero.report h1 {
+  max-width: 460px;
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.hero.report p a:not(.button) {
+  display: inline;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.hero.report a.button:any-link {
+  border-color: var(--text-color);
+  color: var(--text-color);
+}
+
+.hero.report a.button:any-link:hover {
+  background: var(--text-color);
+  color: var(--background-color);
+}
+
+@media (width <= 900px) {
+  .hero.report {
+    --hero-height: 460px;
+  }
+
+  .hero.report h1 {
+    font-size: 26px;
+  }
+}

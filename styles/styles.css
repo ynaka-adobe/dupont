@@ -185,8 +185,9 @@ main > div.section:has(.columns.core-values) a.button.secondary:any-link {
   border: 2px solid var(--text-color);
   border-radius: 2.4em;
   color: var(--text-color);
+  font-family: 'Diodrum Regular', var(--body-font-family);
   font-size: inherit;
-  font-weight: 500;
+  font-weight: 400;
   padding: 0.5em 1.2em;
   text-decoration: none;
   white-space: nowrap;
