@@ -363,7 +363,7 @@ main .section.intro h2::after {
 
 main .section.intro p {
   margin: 0;
-  font-size: var(--body-font-size-xs);
+  font-size: 20px;
   color: var(--dark-color);
   line-height: 1.6;
 }
