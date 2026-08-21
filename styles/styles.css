@@ -154,30 +154,29 @@ main > div {
   margin: 40px 16px;
 }
 
-/* Core Values intro: heading + "Learn more" button side by side */
-main > div:has(> .columns.core-values) {
+/* Core Values intro: heading + "Learn more" button side by side.
+   Scoped via the "columns-container" class decorateBlock() adds to the
+   section itself, since the content wrapper's exact nesting depth is an
+   implementation detail of decorateSections()/decorateBlocks(). */
+main > div.section:has(.columns.core-values) .default-content-wrapper {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   column-gap: 24px;
 }
 
-main > div:has(> .columns.core-values) > h2 {
+main > div.section:has(.columns.core-values) .default-content-wrapper h2 {
   flex: 1 1 60%;
   margin: 0;
 }
 
-main > div:has(> .columns.core-values) > p.button-wrapper {
+main > div.section:has(.columns.core-values) .default-content-wrapper p.button-wrapper {
   flex: 0 0 auto;
   margin: 0;
 }
 
-main > div:has(> .columns.core-values) > .columns.core-values {
-  flex: 1 1 100%;
-}
-
 /* opt this CTA back into pill-button styling, overriding the site-wide plain-link CTA rule */
-main > div:has(> .columns.core-values) a.button.secondary:any-link {
+main > div.section:has(.columns.core-values) a.button.secondary:any-link {
   background: transparent;
   border: 2px solid var(--text-color);
   border-radius: 2.4em;
@@ -189,8 +188,8 @@ main > div:has(> .columns.core-values) a.button.secondary:any-link {
   white-space: nowrap;
 }
 
-main > div:has(> .columns.core-values) a.button.secondary:any-link:hover,
-main > div:has(> .columns.core-values) a.button.secondary:any-link:focus-visible {
+main > div.section:has(.columns.core-values) a.button.secondary:any-link:hover,
+main > div.section:has(.columns.core-values) a.button.secondary:any-link:focus-visible {
   background: var(--light-color);
   border-color: var(--dark-color);
   color: var(--dark-color);
