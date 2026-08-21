@@ -334,7 +334,12 @@ main .section.highlight {
 
 main .section.spaced {
   margin: 0;
-  padding: 80px 0;
+  padding: 80px 0 0;
+}
+
+main .section.spaced h2 {
+  margin: 0;
+  padding-bottom: 40px;
 }
 
 main .section.intro {
