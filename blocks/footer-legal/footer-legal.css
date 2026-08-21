@@ -1,0 +1,54 @@
+.footer-legal {
+  --fl-muted-color: #767676;
+  --fl-strong-color: #212121;
+  --fl-size: 12px;
+}
+
+.footer-legal > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px 40px;
+  padding-top: 24px;
+  margin-top: 40px;
+}
+
+.footer-legal p {
+  margin: 0;
+  font-size: var(--fl-size);
+  line-height: 1.6;
+  color: var(--fl-muted-color);
+}
+
+.footer-legal > div > div:first-child p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+}
+
+.footer-legal a {
+  color: var(--fl-muted-color);
+  text-decoration: none;
+  font-size: var(--fl-size);
+}
+
+.footer-legal a:hover {
+  text-decoration: underline;
+}
+
+/* Cookie Preferences (last legal link) is emphasised in the source */
+.footer-legal > div > div:first-child a:last-child {
+  color: var(--fl-strong-color);
+}
+
+.footer-legal > div > div:last-child p {
+  max-width: 440px;
+  color: var(--fl-muted-color);
+}
+
+@media (width < 900px) {
+  .footer-legal > div {
+    flex-direction: column;
+  }
+}

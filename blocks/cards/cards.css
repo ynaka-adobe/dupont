@@ -1,27 +1,110 @@
+.cards {
+  --card-border-color: #dadada;
+  --card-accent-color: #e1251b;
+  --card-title-color: rgb(33, 37, 41);
+  --card-text-color: rgb(70, 70, 70);
+  --card-gap: 24px;
+}
+
 .cards > ul {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(257px, 1fr));
-  grid-gap: 24px;
+  grid-template-columns: 1fr;
+  gap: var(--card-gap);
 }
 
 .cards > ul > li {
-  border: 1px solid #dadada;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--card-border-color);
   background-color: var(--background-color);
-}
-
-.cards .cards-card-body {
-  margin: 16px;
 }
 
 .cards .cards-card-image {
   line-height: 0;
 }
 
+.cards .cards-card-image picture {
+  display: block;
+}
+
 .cards > ul > li img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 720 / 404;
   object-fit: cover;
+}
+
+.cards .cards-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  margin: 28px;
+}
+
+.cards .cards-card-body h3 {
+  margin: 0 0 20px;
+  padding-bottom: 16px;
+  font-family: var(--heading-font-family);
+  font-weight: 400;
+  font-size: var(--heading-font-size-m);
+  line-height: 1.2;
+  color: var(--card-title-color);
+  position: relative;
+}
+
+.cards .cards-card-body h3::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--card-accent-color);
+}
+
+.cards .cards-card-body p {
+  margin: 0;
+  color: var(--card-text-color);
+  font-size: var(--body-font-size-s);
+  line-height: 1.6;
+}
+
+.cards .cards-card-body p + p {
+  margin-top: 16px;
+}
+
+/* Learn more link — plain text with a trailing arrow, pinned to card bottom */
+.cards .cards-card-body p:last-child {
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.cards .cards-card-body p:last-child a:any-link {
+  color: var(--card-title-color);
+  font-size: var(--body-font-size-s);
+  font-weight: 400;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cards .cards-card-body p:last-child a:any-link::after {
+  content: "\2192";
+  color: var(--card-text-color);
+  font-size: 1em;
+}
+
+.cards .cards-card-body p:last-child a:any-link:hover {
+  color: var(--link-hover-color);
+  text-decoration: none;
+}
+
+@media (width >= 900px) {
+  .cards > ul {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
 }

@@ -1,0 +1,12 @@
+:root {
+  --heading-font-family: "Diodrum", "Helvetica Neue", Arial, sans-serif;
+  --body-font-family: Arial, "Helvetica Neue", Tahoma, sans-serif;
+  --background-color: rgb(255, 255, 255);
+  --text-color: rgb(33, 37, 41);
+  --link-color: rgb(33, 33, 33);
+  --link-hover-color: rgb(0, 86, 179);
+  --section-padding: 33px;
+  --nav-height: 88px;
+}
+
+html, body { overflow: auto !important; }

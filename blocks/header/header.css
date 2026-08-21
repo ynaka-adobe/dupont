@@ -31,12 +31,16 @@ header nav[aria-expanded='true'] {
 }
 
 @media (width >= 900px) {
+  header .nav-wrapper {
+    position: relative;
+  }
+
   header nav {
     display: flex;
     justify-content: space-between;
     gap: 0 32px;
-    max-width: 1264px;
-    padding: 0 32px;
+    max-width: 1440px;
+    padding: 0 24px;
   }
 
   header nav[aria-expanded='true'] {
@@ -47,8 +51,7 @@ header nav[aria-expanded='true'] {
 
 header nav p {
   margin: 0;
-  
-  /* line-height: 1; BOILERPLATE DOESN'T HAVE a P tag in header, */
+  line-height: 1;
 }
 
 header nav a:any-link {
@@ -146,8 +149,12 @@ header .nav-brand {
 }
 
 header nav .nav-brand img {
-  width: 128px;
+  width: 108px;
   height: auto;
+}
+
+header nav .nav-brand p {
+  margin: 0;
 }
 
 /* sections */
@@ -221,7 +228,6 @@ header nav .nav-sections ul > li > ul > li {
 
   header nav .nav-sections ul {
     display: flex;
-    align-items: center;
     gap: 24px;
     margin: 0;
   }
@@ -245,7 +251,6 @@ header nav .nav-sections ul > li > ul > li {
     padding: 16px;
     background-color: var(--light-color);
     white-space: initial;
-    z-index: 1;
   }
 
   header nav .nav-sections .default-content-wrapper > ul > li > ul::before {
@@ -270,55 +275,42 @@ header nav .nav-tools {
   grid-area: tools;
 }
 
-header nav .nav-tools .button {
-  margin: 0;
-  border: none;
-  padding: 0.5em;
-  background: none;
-  line-height: 0;
+/* DuPont header customizations */
+header nav .nav-sections ul {
+  font-size: 16px;
 }
 
-/* breadcrumbs */
-header .breadcrumbs {
-  display: none;
-  margin: auto;
-  max-width: 1248px;
-  height: var(--breadcrumbs-height);
-  padding: 0 24px;
-  font-size: var(--body-font-size-xs);
-  overflow: hidden;
+header nav .nav-sections .default-content-wrapper > ul > li {
+  color: #212529;
+  font-weight: 400;
 }
 
-header .breadcrumbs ol {
-  display: flex;
-  flex-flow: wrap;
+/* tools: Search / Product Finder / English / Sign In / Sign Up */
+header nav .nav-tools ul {
   list-style: none;
+  margin: 0;
   padding: 0;
-  margin-top: 0;
-  margin-bottom: 0;
-  gap: 1ch;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 15px;
+  white-space: nowrap;
 }
 
-/* stylelint-disable-next-line no-descending-specificity */
-header .breadcrumbs ol li {
-  padding: 0;
-  color: var(--dark-color);
+header nav .nav-tools ul li {
+  margin: 0;
 }
 
-header .breadcrumbs ol li:not(:last-child)::after {
-  content: '/';
-  padding-left: 1ch;
-}
-
-/* stylelint-disable-next-line no-descending-specificity */
-header .breadcrumbs ol li[aria-current] {
-  color: var(--text-color);
+header nav .nav-tools a:any-link {
+  color: #212529;
 }
 
 @media (width >= 900px) {
-  header .breadcrumbs {
-    display: block;
-    max-width: 1264px;
-    padding: 0 32px;
+  header nav .nav-sections ul {
+    gap: 32px;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li > ul {
+    font-size: 15px;
   }
 }

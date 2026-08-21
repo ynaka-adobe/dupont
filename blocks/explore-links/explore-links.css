@@ -1,0 +1,80 @@
+.explore-links {
+  --el-card-bg: #fff;
+  --el-card-shadow: 0 0 5px 0 rgb(166 166 166);
+  --el-card-color: #000;
+  --el-card-min-height: 56px;
+  --el-card-padding: 12px 16px;
+  --el-grid-gap: 24px 32px;
+  --el-label-size: 18px;
+  --el-label-weight: 500;
+
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--el-grid-gap);
+}
+
+/* each authored row becomes one grid cell */
+.explore-links > div {
+  margin: 0;
+}
+
+/* the cell wraps a <p> that holds the link */
+.explore-links > div > div,
+.explore-links > div > div > p {
+  margin: 0;
+}
+
+/* the labelled link card */
+main .explore-links a:any-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--el-card-min-height);
+  margin: 0;
+  padding: var(--el-card-padding);
+  background: var(--el-card-bg);
+  box-shadow: var(--el-card-shadow);
+  color: var(--el-card-color);
+  font-family: var(--heading-font-family, sans-serif);
+  font-size: var(--el-label-size);
+  font-weight: var(--el-label-weight);
+  line-height: 1.25;
+  text-align: left;
+  text-decoration: none;
+}
+
+/* right-pointing arrow indicator */
+main .explore-links a:any-link::after {
+  content: "\2192";
+  flex: 0 0 auto;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--el-card-color);
+}
+
+main .explore-links a:any-link:hover,
+main .explore-links a:any-link:focus-visible {
+  color: var(--link-hover-color);
+  text-decoration: none;
+  box-shadow: 0 0 8px 0 rgb(120 120 120);
+}
+
+main .explore-links a:any-link:hover::after,
+main .explore-links a:any-link:focus-visible::after {
+  color: var(--link-hover-color);
+}
+
+@media (width >= 600px) {
+  .explore-links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width >= 900px) {
+  .explore-links {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
