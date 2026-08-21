@@ -202,7 +202,8 @@ main > div.section:has(.columns.core-values) a.button.secondary:any-link:focus-v
 
 main > div.section:has(.explore-links) h1,
 main > div.section:has(.explore-links) h2,
-main > div.section:has(.explore-links) h3 {
+main > div.section:has(.explore-links) h3,
+#whether-youre-looking-for-our-locations-learning-about-career-opportunities-or-want-to-do-business-with-us-keep-exploring-the-possibilities-below {
   font-family: 'Diodrum Regular', var(--heading-font-family);
   font-weight: 400;
 }
