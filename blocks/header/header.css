@@ -493,3 +493,27 @@ header nav .nav-tools ul li a[href="/signin.html"]::before {
     font-size: 14px;
   }
 }
+
+/* ---- Water Solutions branded nav variant (loaded via nav=/nav-water metadata) ---- */
+header .header.nav-variant-water,
+.header.nav-variant-water {
+  box-shadow: inset 0 3px 0 0 #0072ce; /* DuPont Water blue top accent */
+}
+
+header nav.nav-variant-water .nav-brand p:last-child {
+  margin-top: 2px;
+}
+
+header nav.nav-variant-water .nav-brand p:last-child strong {
+  display: block;
+  font-family: var(--heading-font-family);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #0072ce;
+}
+
+header nav.nav-variant-water .nav-sections a:hover,
+header nav.nav-variant-water .nav-tools a:hover {
+  color: #0072ce;
+}
