@@ -21,7 +21,7 @@
   --link-hover-color: rgb(0, 86, 179);
 
   /* fonts */
-  --body-font-family: Arial, "Helvetica Neue", Tahoma, sans-serif;
+  --body-font-family: "Diodrum", "Helvetica Neue", Arial, sans-serif;
   --heading-font-family: "Diodrum", "Helvetica Neue", Arial, sans-serif;
 
   /* body sizes */
@@ -330,4 +330,35 @@ main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
   padding: 40px 0;
+}
+
+main .section.intro {
+  text-align: center;
+}
+
+main .section.intro > div {
+  max-width: 860px;
+}
+
+main .section.intro h1 {
+  margin: 0 0 24px;
+  font-size: var(--heading-font-size-xl);
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text-color);
+}
+
+main .section.intro hr {
+  width: 40px;
+  height: 3px;
+  margin: 0 auto 24px;
+  border: 0;
+  background-color: #e4001c;
+}
+
+main .section.intro p {
+  margin: 0;
+  font-size: var(--body-font-size-xs);
+  color: var(--dark-color);
+  line-height: 1.6;
 }
