@@ -168,6 +168,8 @@ main > div.section:has(.columns.core-values) .default-content-wrapper {
 main > div.section:has(.columns.core-values) .default-content-wrapper h2 {
   flex: 1 1 60%;
   margin: 0;
+  font-family: 'Diodrum Regular', var(--heading-font-family);
+  font-weight: 400;
 }
 
 main > div.section:has(.columns.core-values) .default-content-wrapper p.button-wrapper {
