@@ -517,3 +517,46 @@ header nav.nav-variant-water .nav-sections a:hover,
 header nav.nav-variant-water .nav-tools a:hover {
   color: #0072ce;
 }
+
+/* ---- top utility bar (a 4th authored nav section, e.g. Water Solutions) ---- */
+header .nav-wrapper .nav-top {
+  display: none; /* desktop-only utility strip */
+}
+
+@media (width >= 900px) {
+  header .nav-wrapper .nav-top {
+    display: block;
+    order: -1; /* ensure it sits above the nav */
+    border-bottom: 1px solid #e5e5e5;
+    background: var(--background-color);
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  header .nav-wrapper .nav-top .default-content-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 8px 94px 8px 48px;
+  }
+
+  header .nav-wrapper .nav-top ul {
+    display: flex;
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  header .nav-wrapper .nav-top a:any-link {
+    color: #4b4b4b;
+    text-decoration: none;
+  }
+
+  header .nav-variant-water .nav-top a:hover {
+    color: #0072ce;
+  }
+}
