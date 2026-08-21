@@ -1,6 +1,7 @@
 footer {
   background-color: var(--light-color);
-  font-size: var(--body-font-size-xs);
+  font-family: 'Noto Sans Regular', var(--body-font-family);
+  font-size: 11px;
 }
 
 footer .footer > div {
