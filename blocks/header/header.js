@@ -128,6 +128,23 @@ function escapeHtml(s) {
   }[c]));
 }
 
+// escape + wrap case-insensitive matches of `q` in <mark>
+function highlightMatch(text, q) {
+  const src = text || '';
+  if (!q) return escapeHtml(src);
+  const re = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'ig');
+  let out = '';
+  let last = 0;
+  let m = re.exec(src);
+  while (m) {
+    if (m.index === re.lastIndex) { re.lastIndex += 1; m = re.exec(src); continue; }
+    out += `${escapeHtml(src.slice(last, m.index))}<mark>${escapeHtml(m[0])}</mark>`;
+    last = m.index + m[0].length;
+    m = re.exec(src);
+  }
+  return out + escapeHtml(src.slice(last));
+}
+
 /**
  * Turns the "Search" tool link into a live search box backed by /query-index.json.
  * @param {Element} nav the decorated nav element
@@ -150,14 +167,24 @@ function decorateSearch(nav) {
   const results = box.querySelector('.nav-search-results');
   searchLink.after(box);
 
+  let active = -1; // index of keyboard-highlighted result
+
+  const setActive = (i) => {
+    const opts = [...results.querySelectorAll('.nav-search-result')];
+    active = i;
+    opts.forEach((el, n) => el.classList.toggle('active', n === active));
+    if (opts[active]) opts[active].scrollIntoView({ block: 'nearest' });
+  };
+
   const render = (items, q) => {
+    active = -1;
     if (!q) { results.hidden = true; results.innerHTML = ''; return; }
     if (!items.length) {
       results.innerHTML = `<p class="nav-search-empty">No results for “${escapeHtml(q)}”</p>`;
     } else {
       results.innerHTML = items.map((r) => `<a class="nav-search-result" href="${escapeHtml(r.path)}">
-        <span class="nav-search-title">${escapeHtml(r.title || r.path)}</span>
-        ${r.description ? `<span class="nav-search-desc">${escapeHtml(r.description)}</span>` : ''}
+        <span class="nav-search-title">${highlightMatch(r.title || r.path, q)}</span>
+        ${r.description ? `<span class="nav-search-desc">${highlightMatch(r.description, q)}</span>` : ''}
       </a>`).join('');
     }
     results.hidden = false;
@@ -173,8 +200,31 @@ function decorateSearch(nav) {
       .toLowerCase().includes(needle)).slice(0, 10);
     render(matches, q);
   };
+
+  const goToResults = () => {
+    const q = input.value.trim();
+    if (q) window.location.href = `/search?q=${encodeURIComponent(q)}`;
+  };
+
   input.addEventListener('input', () => { clearTimeout(debounce); debounce = setTimeout(doSearch, 180); });
-  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { clearTimeout(debounce); doSearch(); } });
+  input.addEventListener('keydown', (e) => {
+    const opts = [...results.querySelectorAll('.nav-search-result')];
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (opts.length) setActive((active + 1) % opts.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (opts.length) setActive((active - 1 + opts.length) % opts.length);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      clearTimeout(debounce);
+      if (active >= 0 && opts[active]) opts[active].click();
+      else goToResults();
+    } else if (e.key === 'Escape') {
+      input.hidden = true;
+      results.hidden = true;
+    }
+  });
 
   searchLink.addEventListener('click', (e) => {
     e.preventDefault();
