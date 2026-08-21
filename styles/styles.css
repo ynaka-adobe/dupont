@@ -340,6 +340,9 @@ main .section.spaced {
 main .section.spaced h2 {
   margin: 0;
   padding-bottom: 56px;
+  font-family: 'Diodrum Medium', var(--heading-font-family);
+  font-size: 36px;
+  font-weight: 500;
 }
 
 main .section.intro {
