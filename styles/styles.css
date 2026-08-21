@@ -200,6 +200,13 @@ main > div.section:has(.columns.core-values) a.button.secondary:any-link:focus-v
   color: var(--dark-color);
 }
 
+main > div.section:has(.explore-links) h1,
+main > div.section:has(.explore-links) h2,
+main > div.section:has(.explore-links) h3 {
+  font-family: 'Diodrum Regular', var(--heading-font-family);
+  font-weight: 400;
+}
+
 input,
 textarea,
 select,
