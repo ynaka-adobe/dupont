@@ -21,8 +21,8 @@
   --link-hover-color: rgb(0, 86, 179);
 
   /* fonts */
-  --body-font-family: "Diodrum", "Helvetica Neue", Arial, sans-serif;
-  --heading-font-family: "Diodrum", "Helvetica Neue", Arial, sans-serif;
+  --body-font-family: "Diodrum Regular";
+  --heading-font-family: "Diodrum Regular";
 
   /* body sizes */
   --body-font-size-m: 22px;
@@ -46,19 +46,6 @@ main a.button:any-link {
   background: none; border: none; border-radius: 0;
   color: var(--link-color); font-size: inherit; font-weight: inherit;
   padding: 0; margin: 0; text-decoration: underline; white-space: normal;
-}
-
-/* fallback fonts */
-@font-face {
-  font-family: roboto-condensed-fallback;
-  size-adjust: 88.82%;
-  src: local('Arial');
-}
-
-@font-face {
-  font-family: roboto-fallback;
-  size-adjust: 99.529%;
-  src: local('Arial');
 }
 
 @media (width >= 900px) {
@@ -394,7 +381,7 @@ main .section.spaced {
 main .section.spaced h2 {
   margin: 0;
   padding-bottom: 56px;
-  font-family: 'Diodrum Medium', var(--heading-font-family);
+  font-family: 'Diodrum Regular', var(--heading-font-family);
   font-size: 36px;
   font-weight: 500;
 }

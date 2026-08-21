@@ -1,6 +1,6 @@
 :root {
-  --heading-font-family: "Diodrum", "Helvetica Neue", Arial, sans-serif;
-  --body-font-family: "Diodrum", "Helvetica Neue", Arial, sans-serif;
+  --heading-font-family: "Diodrum Regular";
+  --body-font-family: "Diodrum Regular";
   --background-color: rgb(255, 255, 255);
   --text-color: rgb(33, 37, 41);
   --link-color: rgb(33, 33, 33);

@@ -404,13 +404,15 @@ header nav .nav-tools ul li {
   margin: 0;
 }
 
-header nav .nav-tools ul li a[href="/search.html"] {
+header nav .nav-tools ul li a[href="/search.html"],
+header nav .nav-tools ul li a[href="/search"] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-header nav .nav-tools ul li a[href="/search.html"]::before {
+header nav .nav-tools ul li a[href="/search.html"]::before,
+header nav .nav-tools ul li a[href="/search"]::before {
   content: '';
   display: inline-block;
   width: 16px;
@@ -441,13 +443,15 @@ header nav .nav-tools a:any-link {
   color: var(--dark-color);
 }
 
-header nav .nav-tools ul li a[href="/select-a-location.html"] {
+header nav .nav-tools ul li a[href="/select-a-location.html"],
+header nav .nav-tools ul li a[href="/select-a-location"] {
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-header nav .nav-tools ul li a[href="/select-a-location.html"]::before {
+header nav .nav-tools ul li a[href="/select-a-location.html"]::before,
+header nav .nav-tools ul li a[href="/select-a-location"]::before {
   content: '';
   display: inline-block;
   width: 16px;
