@@ -40,7 +40,7 @@ header nav[aria-expanded='true'] {
     justify-content: space-between;
     gap: 0 32px;
     max-width: 1440px;
-    padding: 0 24px;
+    padding: 0 94px 0 48px;
   }
 
   header nav[aria-expanded='true'] {
@@ -56,6 +56,7 @@ header nav p {
 
 header nav a:any-link {
   color: currentcolor;
+  text-decoration: none;
 }
 
 /* hamburger */
@@ -202,28 +203,7 @@ header nav .nav-sections ul > li > ul > li {
 
   header nav .nav-sections .nav-drop {
     position: relative;
-    padding-right: 16px;
     cursor: pointer;
-  }
-
-  header nav .nav-sections .nav-drop::after {
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 0.5em;
-    right: 2px;
-    transform: rotate(135deg);
-    width: 6px;
-    height: 6px;
-    border: 2px solid currentcolor;
-    border-radius: 0 1px 0 0;
-    border-width: 2px 2px 0 0;
-  }
-
-  header nav .nav-sections .nav-drop[aria-expanded='true']::after {
-    top: unset;
-    bottom: 0.5em;
-    transform: rotate(315deg);
   }
 
   header nav .nav-sections ul {
@@ -235,6 +215,23 @@ header nav .nav-sections ul > li > ul > li {
   header nav .nav-sections .default-content-wrapper > ul > li {
     flex: 0 1 auto;
     position: relative;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -8px;
+    height: 2px;
+    background-color: var(--nav-drop-accent-color);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:hover::after,
+  header nav .nav-sections .default-content-wrapper > ul > li[aria-expanded='true']::after {
+    opacity: 1;
   }
 
   header nav .nav-sections .default-content-wrapper > ul > li > ul {
@@ -268,6 +265,106 @@ header nav .nav-sections ul > li > ul > li {
   header nav .nav-sections .default-content-wrapper > ul > li > ul > li {
     padding: 8px 0;
   }
+
+  /* Industries & Solutions mega menu */
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"])[aria-expanded='true'] > ul {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(180px, 240px));
+    column-gap: 64px;
+    row-gap: 14px;
+    align-items: start;
+    position: fixed;
+    top: var(--nav-height);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 1440px;
+    padding: 40px 94px 48px 48px;
+    box-sizing: border-box;
+    background-color: #fff;
+    box-shadow: 0 12px 24px rgb(0 0 0 / 12%);
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul::before {
+    content: '';
+    display: none;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"])[aria-expanded='true'] > ul::before {
+    content: 'Industries & Solutions';
+    display: block;
+    position: static;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: auto;
+    height: auto;
+    margin-bottom: 12px;
+    border: 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--dark-color);
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"])[aria-expanded='true'] > ul::after {
+    content: '';
+    display: block;
+    position: static;
+    grid-column: 1 / -1;
+    grid-row: 8;
+    width: auto;
+    height: 0;
+    border: 0;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li {
+    padding: 0;
+    font-weight: 400;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(1) { grid-column: 1; grid-row: 2; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(2) { grid-column: 1; grid-row: 3; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(3) { grid-column: 1; grid-row: 4; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(4) { grid-column: 1; grid-row: 5; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(5) { grid-column: 1; grid-row: 6; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(6) { grid-column: 2; grid-row: 2; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(7) { grid-column: 2; grid-row: 3; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(8) { grid-column: 2; grid-row: 4; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(9) { grid-column: 2; grid-row: 5; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(10) { grid-column: 3; grid-row: 2; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(11) { grid-column: 3; grid-row: 3; }
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(12) { grid-column: 3; grid-row: 4; }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(13) {
+    grid-column: 1;
+    grid-row: 7;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(14) {
+    grid-column: 4;
+    grid-row: 2;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(14)::before {
+    content: 'Brands & Products';
+    display: block;
+    margin-bottom: 12px;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--dark-color);
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(15) {
+    grid-column: 4;
+    grid-row: 3;
+  }
+
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(13) a,
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(14) a,
+  header nav .nav-sections .default-content-wrapper > ul > li:has(> p > a[href="/industries.html"]) > ul > li:nth-child(15) a {
+    color: #e4001c;
+    font-weight: 500;
+  }
 }
 
 /* tools */
@@ -276,12 +373,17 @@ header nav .nav-tools {
 }
 
 /* DuPont header customizations */
+header nav {
+  --nav-drop-accent-color: #e1251b;
+}
+
 header nav .nav-sections ul {
-  font-size: 16px;
+  font-family: var(--heading-font-family);
+  font-size: 14px;
 }
 
 header nav .nav-sections .default-content-wrapper > ul > li {
-  color: #212529;
+  color: var(--dark-color);
   font-weight: 400;
 }
 
@@ -293,7 +395,8 @@ header nav .nav-tools ul {
   display: flex;
   align-items: center;
   gap: 20px;
-  font-size: 15px;
+  font-family: var(--heading-font-family);
+  font-size: 12px;
   white-space: nowrap;
 }
 
@@ -301,8 +404,80 @@ header nav .nav-tools ul li {
   margin: 0;
 }
 
+header nav .nav-tools ul li a[href="/search.html"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+header nav .nav-tools ul li a[href="/search.html"]::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: currentcolor;
+  mask: url('/icons/search.svg') no-repeat center / contain;
+  -webkit-mask: url('/icons/search.svg') no-repeat center / contain;
+}
+
+header nav .nav-tools ul li a[href="/solution-finder.html"] {
+  position: relative;
+  padding-left: 20px;
+}
+
+header nav .nav-tools ul li a[href="/solution-finder.html"]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 16px;
+  background-color: currentcolor;
+  opacity: 0.4;
+}
+
 header nav .nav-tools a:any-link {
-  color: #212529;
+  color: var(--dark-color);
+}
+
+header nav .nav-tools ul li a[href="/select-a-location.html"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+header nav .nav-tools ul li a[href="/select-a-location.html"]::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: url('/icons/globe.svg') no-repeat center / contain;
+}
+
+header nav .nav-tools ul li:has(a[href="/signup.html"]) {
+  display: none;
+}
+
+header nav .nav-tools ul li a[href="/signin.html"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid currentcolor;
+  border-radius: 50%;
+  font-size: 0;
+}
+
+header nav .nav-tools ul li a[href="/signin.html"]::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: currentcolor;
+  mask: url('/icons/account.svg') no-repeat center / contain;
+  -webkit-mask: url('/icons/account.svg') no-repeat center / contain;
 }
 
 @media (width >= 900px) {
@@ -311,6 +486,6 @@ header nav .nav-tools a:any-link {
   }
 
   header nav .nav-sections .default-content-wrapper > ul > li > ul {
-    font-size: 15px;
+    font-size: 14px;
   }
 }

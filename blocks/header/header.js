@@ -148,6 +148,17 @@ export default async function decorate(block) {
           navSection.setAttribute('aria-expanded', expanded ? 'false' : 'true');
         }
       });
+      if (navSection.classList.contains('nav-drop')) {
+        navSection.addEventListener('mouseenter', () => {
+          if (isDesktop.matches) {
+            toggleAllNavSections(navSections);
+            navSection.setAttribute('aria-expanded', 'true');
+          }
+        });
+        navSection.addEventListener('mouseleave', () => {
+          if (isDesktop.matches) navSection.setAttribute('aria-expanded', 'false');
+        });
+      }
     });
   }
 
