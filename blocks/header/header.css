@@ -658,3 +658,14 @@ header nav .nav-search-empty {
   font-size: 14px;
   color: #666;
 }
+
+/* header search: active row + matched-text highlight */
+header nav a.nav-search-result.active {
+  background: #eef3fb;
+}
+
+header nav .nav-search-results mark {
+  background: #fff2a8;
+  color: inherit;
+  padding: 0 1px;
+}
