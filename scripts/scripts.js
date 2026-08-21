@@ -121,23 +121,33 @@ function decorateButtons(main) {
       if (new URL(a.href).href === new URL(text, window.location).href) return;
     } catch { /* continue */ }
 
-    // require authored formatting for buttonization
-    const strong = a.closest('strong');
-    const em = a.closest('em');
+    // require authored formatting for buttonization. Handles both nesting
+    // orders: <strong><a> (docx/gdocs exports wrap the link) and <a><strong>
+    // (DA authoring wraps the link text instead).
+    const unwrap = (mark) => { if (mark) mark.replaceWith(...mark.childNodes); };
+    const strong = a.closest('strong') || a.querySelector('strong');
+    const em = a.closest('em') || a.querySelector('em');
     if (!strong && !em) return;
 
     p.className = 'button-wrapper';
     a.className = 'button';
     if (strong && em) { // high-impact call-to-action
       a.classList.add('accent');
-      const outer = strong.contains(em) ? strong : em;
-      outer.replaceWith(a);
+      if (a.contains(strong) || a.contains(em)) {
+        unwrap(a.querySelector('strong'));
+        unwrap(a.querySelector('em'));
+      } else {
+        const outer = strong.contains(em) ? strong : em;
+        outer.replaceWith(a);
+      }
     } else if (strong) {
       a.classList.add('primary');
-      strong.replaceWith(a);
+      if (a.contains(strong)) unwrap(strong);
+      else strong.replaceWith(a);
     } else {
       a.classList.add('secondary');
-      em.replaceWith(a);
+      if (a.contains(em)) unwrap(em);
+      else em.replaceWith(a);
     }
   });
 }
