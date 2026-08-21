@@ -149,15 +149,25 @@ export default async function decorate(block) {
         }
       });
       if (navSection.classList.contains('nav-drop')) {
-        navSection.addEventListener('mouseenter', () => {
-          if (isDesktop.matches) {
-            toggleAllNavSections(navSections);
-            navSection.setAttribute('aria-expanded', 'true');
-          }
-        });
-        navSection.addEventListener('mouseleave', () => {
-          if (isDesktop.matches) navSection.setAttribute('aria-expanded', 'false');
-        });
+        let closeTimer = null;
+        const open = () => {
+          if (!isDesktop.matches) return;
+          clearTimeout(closeTimer);
+          toggleAllNavSections(navSections);
+          navSection.setAttribute('aria-expanded', 'true');
+        };
+        const scheduleClose = () => {
+          if (!isDesktop.matches) return;
+          clearTimeout(closeTimer);
+          closeTimer = setTimeout(() => navSection.setAttribute('aria-expanded', 'false'), 200);
+        };
+        navSection.addEventListener('mouseenter', open);
+        navSection.addEventListener('mouseleave', scheduleClose);
+        const dropPanel = navSection.querySelector('ul');
+        if (dropPanel) {
+          dropPanel.addEventListener('mouseenter', open);
+          dropPanel.addEventListener('mouseleave', scheduleClose);
+        }
       }
     });
   }
