@@ -2,7 +2,6 @@
   --el-card-bg: #fff;
   --el-card-shadow: 0 0 5px 0 rgb(166 166 166);
   --el-card-color: #000;
-  --el-card-min-height: 56px;
   --el-card-padding: 12px 16px;
   --el-grid-gap: 24px 32px;
   --el-label-size: 18px;
@@ -18,13 +17,35 @@
   margin: 0;
 }
 
-/* the cell wraps a <p> that holds the link */
-.explore-links > div > div,
+/* the cell is the card: image on top, label below */
+.explore-links > div > div {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--el-card-bg);
+  box-shadow: var(--el-card-shadow);
+}
+
 .explore-links > div > div > p {
   margin: 0;
 }
 
-/* the labelled link card */
+/* card image */
+.explore-links picture {
+  display: block;
+  width: 100%;
+}
+
+.explore-links img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+/* labelled link row below the image */
 main .explore-links a:any-link {
   display: flex;
   align-items: center;
@@ -32,11 +53,9 @@ main .explore-links a:any-link {
   gap: 16px;
   box-sizing: border-box;
   width: 100%;
-  min-height: var(--el-card-min-height);
   margin: 0;
   padding: var(--el-card-padding);
-  background: var(--el-card-bg);
-  box-shadow: var(--el-card-shadow);
+  background: transparent;
   color: var(--el-card-color);
   font-family: var(--heading-font-family, sans-serif);
   font-size: var(--el-label-size);
@@ -55,11 +74,15 @@ main .explore-links a:any-link::after {
   color: var(--el-card-color);
 }
 
+main .explore-links > div > div:hover,
+main .explore-links > div > div:focus-within {
+  box-shadow: 0 0 8px 0 rgb(120 120 120);
+}
+
 main .explore-links a:any-link:hover,
 main .explore-links a:any-link:focus-visible {
   color: var(--link-hover-color);
   text-decoration: none;
-  box-shadow: 0 0 8px 0 rgb(120 120 120);
 }
 
 main .explore-links a:any-link:hover::after,
