@@ -130,6 +130,15 @@ export default async function decorate(block) {
     if (section) section.classList.add(`nav-${c}`);
   });
 
+  // tag with a brand variant class derived from the nav fragment
+  // (e.g. /nav-water -> "nav-variant-water") so a section can be styled distinctly
+  const navName = navPath.split('/').pop();
+  if (navName && navName !== 'nav' && navName.startsWith('nav-')) {
+    const variant = `nav-variant-${navName.slice('nav-'.length)}`;
+    nav.classList.add(variant);
+    block.classList.add(variant);
+  }
+
   const navBrand = nav.querySelector('.nav-brand');
   const brandLink = navBrand.querySelector('.button');
   if (brandLink) {
