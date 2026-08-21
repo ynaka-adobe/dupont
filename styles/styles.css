@@ -162,18 +162,20 @@ main > div.section:has(.columns.core-values) .default-content-wrapper {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  column-gap: 24px;
 }
 
 main > div.section:has(.columns.core-values) .default-content-wrapper h2 {
-  flex: 1 1 60%;
+  flex: 1 1 50%;
+  max-width: 50%;
   margin: 0;
   font-family: 'Diodrum Regular', var(--heading-font-family);
   font-weight: 400;
 }
 
 main > div.section:has(.columns.core-values) .default-content-wrapper p.button-wrapper {
-  flex: 0 0 auto;
+  flex: 1 1 50%;
+  display: flex;
+  justify-content: center;
   margin: 0;
 }
 
