@@ -332,6 +332,11 @@ main .section.highlight {
   padding: 40px 0;
 }
 
+main .section.spaced {
+  margin: 0;
+  padding: 80px 0;
+}
+
 main .section.intro {
   text-align: center;
 }
