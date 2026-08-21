@@ -139,6 +139,11 @@ export default async function decorate(block) {
     block.classList.add(variant);
   }
 
+  // optional top utility bar: a 4th authored section becomes a full-width
+  // strip rendered above the main nav row (see navWrapper assembly below)
+  const navTop = nav.children[3];
+  if (navTop) navTop.classList.add('nav-top');
+
   const navBrand = nav.querySelector('.nav-brand');
   const brandLink = navBrand.querySelector('.button');
   if (brandLink) {
@@ -196,6 +201,7 @@ export default async function decorate(block) {
 
   const navWrapper = document.createElement('div');
   navWrapper.className = 'nav-wrapper';
+  if (navTop) navWrapper.append(navTop); // full-width strip above the nav
   navWrapper.append(nav);
   block.append(navWrapper);
 }
