@@ -560,3 +560,26 @@ header .nav-wrapper .nav-top {
     color: #0072ce;
   }
 }
+
+/* ---- down-caret on Water nav flyout items ---- */
+@media (width >= 900px) {
+  header nav.nav-variant-water .nav-sections .nav-drop > p {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  header nav.nav-variant-water .nav-sections .nav-drop > p::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid currentcolor;
+    border-bottom: 2px solid currentcolor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.15s ease;
+  }
+
+  header nav.nav-variant-water .nav-sections .nav-drop[aria-expanded='true'] > p::after {
+    transform: translateY(1px) rotate(-135deg);
+  }
+}
