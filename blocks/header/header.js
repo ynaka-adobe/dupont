@@ -108,6 +108,89 @@ function toggleMenu(nav, navSections, forceExpanded = null) {
   }
 }
 
+// query-index is fetched once and cached for the header search
+let searchIndexCache;
+async function loadSearchIndex() {
+  if (searchIndexCache) return searchIndexCache;
+  try {
+    const resp = await fetch('/query-index.json?limit=5000');
+    const json = await resp.json();
+    searchIndexCache = Array.isArray(json.data) ? json.data : [];
+  } catch (e) {
+    searchIndexCache = [];
+  }
+  return searchIndexCache;
+}
+
+function escapeHtml(s) {
+  return (s || '').replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+}
+
+/**
+ * Turns the "Search" tool link into a live search box backed by /query-index.json.
+ * @param {Element} nav the decorated nav element
+ */
+function decorateSearch(nav) {
+  const tools = nav.querySelector('.nav-tools');
+  if (!tools) return;
+  const searchLink = [...tools.querySelectorAll('a')].find(
+    (a) => /(^|\/)search(\/|$)/i.test(a.getAttribute('href') || '')
+      || a.textContent.trim().toLowerCase() === 'search',
+  );
+  if (!searchLink) return;
+
+  const box = document.createElement('div');
+  box.className = 'nav-search';
+  box.innerHTML = `
+    <input type="search" class="nav-search-input" placeholder="Search DuPont" aria-label="Search" hidden>
+    <div class="nav-search-results" role="listbox" hidden></div>`;
+  const input = box.querySelector('.nav-search-input');
+  const results = box.querySelector('.nav-search-results');
+  searchLink.after(box);
+
+  const render = (items, q) => {
+    if (!q) { results.hidden = true; results.innerHTML = ''; return; }
+    if (!items.length) {
+      results.innerHTML = `<p class="nav-search-empty">No results for “${escapeHtml(q)}”</p>`;
+    } else {
+      results.innerHTML = items.map((r) => `<a class="nav-search-result" href="${escapeHtml(r.path)}">
+        <span class="nav-search-title">${escapeHtml(r.title || r.path)}</span>
+        ${r.description ? `<span class="nav-search-desc">${escapeHtml(r.description)}</span>` : ''}
+      </a>`).join('');
+    }
+    results.hidden = false;
+  };
+
+  let debounce;
+  const doSearch = async () => {
+    const q = input.value.trim();
+    if (!q) { render([], ''); return; }
+    const data = await loadSearchIndex();
+    const needle = q.toLowerCase();
+    const matches = data.filter((r) => `${r.title || ''} ${r.description || ''} ${r.path || ''}`
+      .toLowerCase().includes(needle)).slice(0, 10);
+    render(matches, q);
+  };
+  input.addEventListener('input', () => { clearTimeout(debounce); debounce = setTimeout(doSearch, 180); });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { clearTimeout(debounce); doSearch(); } });
+
+  searchLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    const willShow = input.hidden;
+    input.hidden = !willShow;
+    if (willShow) { input.focus(); loadSearchIndex(); } else { results.hidden = true; }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!box.contains(e.target) && e.target !== searchLink) {
+      input.hidden = true;
+      results.hidden = true;
+    }
+  });
+}
+
 /**
  * loads and decorates the header, mainly the nav
  * @param {Element} block The header block element
@@ -143,6 +226,9 @@ export default async function decorate(block) {
   // strip rendered above the main nav row (see navWrapper assembly below)
   const navTop = nav.children[3];
   if (navTop) navTop.classList.add('nav-top');
+
+  // enable the header search box (backed by /query-index.json)
+  decorateSearch(nav);
 
   const navBrand = nav.querySelector('.nav-brand');
   const brandLink = navBrand.querySelector('.button');
