@@ -39,8 +39,9 @@ function esc(s) {
 
 export default async function decorate(block) {
   const params = new URLSearchParams(window.location.search);
-  const state = { q: (params.get('q') || '').trim(), sel: {} };
-  FACETS.forEach(([k]) => { state.sel[k] = new Set(); });
+  const state = { q: (params.get('q') || '').trim(), sel: {}, expanded: {} };
+  FACETS.forEach(([k]) => { state.sel[k] = new Set(); state.expanded[k] = false; });
+  const LIMIT = 15;
 
   block.innerHTML = `
     <div class="pf-layout">
@@ -92,11 +93,14 @@ export default async function decorate(block) {
       state.sel[key].forEach((v) => { if (!counts.has(v)) counts.set(v, 0); });
       const values = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
       if (!values.length) return '';
-      const opts = values.slice(0, 15).map(([v, c]) => `<label class="pf-opt">
+      const expanded = state.expanded[key];
+      const opts = values.map(([v, c], i) => `<label class="pf-opt${i >= LIMIT && !expanded ? ' pf-hidden' : ''}">
         <input type="checkbox" data-facet="${esc(key)}" value="${esc(v)}" ${state.sel[key].has(v) ? 'checked' : ''}>
         <span class="pf-opt-label">${esc(v)}</span><span class="pf-opt-count">${c}</span>
       </label>`).join('');
-      const more = values.length > 15 ? `<p class="pf-more">+${values.length - 15} more</p>` : '';
+      const more = values.length > LIMIT
+        ? `<button type="button" class="pf-more" data-facet="${esc(key)}">${expanded ? 'Show less' : `+${values.length - LIMIT} more`}</button>`
+        : '';
       return `<details class="pf-group" open><summary>${esc(label)}</summary>${opts}${more}</details>`;
     }).join('');
     clearBtn.hidden = totalSelected() === 0;
@@ -126,6 +130,14 @@ export default async function decorate(block) {
     const set = state.sel[cb.dataset.facet];
     if (cb.checked) set.add(cb.value); else set.delete(cb.value);
     rerender();
+  });
+  groupsEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pf-more');
+    if (!btn) return;
+    e.preventDefault();
+    const key = btn.dataset.facet;
+    state.expanded[key] = !state.expanded[key];
+    renderFacets();
   });
   clearBtn.addEventListener('click', () => {
     FACETS.forEach(([k]) => state.sel[k].clear());
