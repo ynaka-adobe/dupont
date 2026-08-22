@@ -64,10 +64,23 @@
   font-size: 12px;
 }
 
+.product-finder .pf-opt.pf-hidden {
+  display: none;
+}
+
 .product-finder .pf-more {
-  margin: 4px 0 0;
-  color: #888;
-  font-size: 12px;
+  margin: 6px 0 0;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #0072ce;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.product-finder .pf-more:hover {
+  text-decoration: underline;
 }
 
 /* main */
