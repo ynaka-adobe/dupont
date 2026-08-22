@@ -128,11 +128,12 @@ function stubDecision(profile) {
 /* ---- inject the experience server-side (token-based, no DOM at the edge) ----
  * Target returns JSON offers shaped as { "token": "hero", "html": "<...>" }
  * (or an array of them). The author marks a spot in the page one of two ways:
- *   1) a text token typed anywhere in the content:   [[target:hero]]
- *      (survives EDS rendering; if alone in a <p>, the <p> wrapper is replaced too)
- *   2) a slot element:   <div class="target-slot" data-token="hero"></div>
- * The edge swaps the marker for the offer HTML. Falls back to the persona banner
- * when no offer matched (e.g. no activity live yet).
+ *   1) an EMPTY SLOT BLOCK (recommended; invisible until filled, survives EDS):
+ *        <div class="target-slot-hero"></div>
+ *      -> offer HTML is injected inside the matching target-slot-<token> block.
+ *   2) a text token typed in the content:   [[target:hero]]
+ *      -> replaced in place (its <p> wrapper too); visible until the edge runs.
+ * Falls back to the persona banner when no offer matched (e.g. no activity yet).
  */
 function normalizeOffers(options) {
   const res = [];
@@ -151,12 +152,11 @@ function injectExperience(html, decision, profile) {
   normalizeOffers(decision.options).forEach(({ token, html: content }) => {
     const t = escapeRe(token);
     out = out
+      // 1) empty slot block: inject offer HTML just inside <div class="target-slot-<token>...">
+      .replace(new RegExp('(<div class="target-slot-' + t + '[^"]*"[^>]*>)', 'g'), (_m, open) => open + content)
+      // 2) text token, optionally alone in a paragraph
       .replace(new RegExp('<p>\\s*\\[\\[target:' + t + '\\]\\]\\s*</p>', 'g'), () => content)
-      .replace(new RegExp('\\[\\[target:' + t + '\\]\\]', 'g'), () => content)
-      .replace(
-        new RegExp('<div([^>]*)data-token="' + t + '"([^>]*)>[\\s\\S]*?</div>', 'g'),
-        (_m, a, b) => `<div${a}data-token="${token}"${b}>${content}</div>`,
-      );
+      .replace(new RegExp('\\[\\[target:' + t + '\\]\\]', 'g'), () => content);
   });
   const applied = out !== html;
   // strip any leftover unfilled tokens so they never render as raw text
