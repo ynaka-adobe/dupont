@@ -1,49 +1,66 @@
 /* Edge function: persona-decision  (AEM Edge Delivery / Fastly Compute JS)
- * Resolves persona/loggedIn/region from the ?p= query param (first hit) or the
- * demoProfile cookie (repeat hits), DECIDES the experience AT THE EDGE, injects
- * it into the page HTML server-side, and persists the resolved profile cookie.
  *
- * The Target Delivery API call is STUBBED (see decide()) so this is deployable
- * and testable without Target credentials. Swap decide() for a real
- * {tenant}.tt.omtrdc.net/rest/v1/delivery call passing profileParameters.
+ * Resolves persona/loggedIn/region from the ?p= query param (first hit) or the
+ * demoProfile cookie (repeat hits), asks Adobe Target for the decision AT THE
+ * EDGE (server-side Delivery API), injects the returned experience into the page
+ * HTML, and persists the resolved profile + Target ids as cookies.
+ *
+ * CONFIG: set TARGET_CLIENT to your Target client code to enable real decisioning.
+ * While it is '' the function runs in STUB mode (injects a persona banner) so it
+ * stays deployable and testable without Target credentials.
+ *
+ * BACKENDS (register in your edge-function environment / fastly.toml):
+ *   - 'origin'  -> https://main--dupont--ynaka-adobe.aem.live   (content)
+ *   - 'target'  -> https://<TARGET_CLIENT>.tt.omtrdc.net         (Adobe Target)
  */
+const TARGET_CLIENT = '';                 // e.g. 'dupont'  <-- set to enable real Target
+const TARGET_MBOX = 'target-global-mbox';
+const ORIGIN = 'https://main--dupont--ynaka-adobe.aem.live';
+
 const PERSONA = {
   1: { name: 'Technical Evaluator', color: '#0072ce' },
   2: { name: 'Business Decision Maker', color: '#e1261c' },
   3: { name: 'Procurement Manager', color: '#00884a' },
   4: { name: 'Industry Researcher', color: '#6a1b9a' },
 };
-const ORIGIN = 'https://main--dupont--ynaka-adobe.aem.live';
 
 addEventListener('fetch', (event) => event.respondWith(handleRequest(event)));
 
 async function handleRequest(event) {
   const req = event.request;
   const url = new URL(req.url);
-  const profile = resolveProfile(req, url);
+  const cookies = parseCookies(req.headers.get('cookie') || '');
+  const profile = resolveProfile(cookies, url);
+  const ids = resolveIds(cookies);
 
-  // Fetch the underlying page from the content origin.
-  // 'origin' must be declared as a backend/origin selector for this function.
+  // 1) base page from the content origin
   const originResp = await fetch(ORIGIN + url.pathname, { backend: 'origin' });
   let html = await originResp.text();
 
+  // 2) decision at the edge
   if (profile.persona) {
-    const decision = await decide(url.pathname, profile);
+    let decision;
+    try {
+      decision = TARGET_CLIENT
+        ? await targetDeliver(url, profile, ids)   // real Adobe Target call
+        : stubDecision(profile);                   // no-creds fallback
+    } catch (e) {
+      decision = stubDecision(profile);            // fail open to content/stub
+    }
     html = injectExperience(html, decision, profile);
   }
 
+  // 3) persist profile + Target ids
   const headers = new Headers(originResp.headers);
   headers.set('content-type', 'text/html; charset=utf-8');
   headers.set('x-persona', String(profile.persona || ''));
-  headers.append(
-    'set-cookie',
-    `demoProfile=${encodeURIComponent(JSON.stringify(profile))}; Path=/; Max-Age=2592000; SameSite=Lax`,
-  );
+  headers.append('set-cookie', cookie('demoProfile', JSON.stringify(profile)));
+  if (ids.tntId) headers.append('set-cookie', cookie('mboxTnt', ids.tntId));
   return new Response(html, { status: originResp.status, headers });
 }
 
-function resolveProfile(req, url) {
-  const cookies = parseCookies(req.headers.get('cookie') || '');
+/* ---- profile + ids ---- */
+function resolveProfile(cookies, url) {
   let profile = {};
   try { profile = JSON.parse(cookies.demoProfile || '{}'); } catch (e) { profile = {}; }
   const p = url.searchParams.get('p'); if (p) profile.persona = parseInt(p, 10);
@@ -51,28 +68,99 @@ function resolveProfile(req, url) {
   const region = url.searchParams.get('region'); if (region) profile.region = region.toUpperCase();
   return profile;
 }
+function resolveIds(cookies) {
+  return {
+    tntId: cookies.mboxTnt || '',
+    sessionId: cookies.mboxSession || cryptoRandom(),
+  };
+}
 
-/* STUB — replace with Adobe Target server-side Delivery API:
- *   POST https://<tenant>.tt.omtrdc.net/rest/v1/delivery?client=<tenant>&sessionId=<sid>
- *   body.execute.pageLoad.profileParameters = { persona, loggedIn, region }
- *   then map returned options into injectExperience().
- */
-async function decide(path, profile) {
+/* ---- Adobe Target server-side Delivery API ---- */
+async function targetDeliver(url, profile, ids) {
+  const body = {
+    context: { channel: 'web', address: { url: `https://www.dupont.com${url.pathname}` } },
+    id: ids.tntId ? { tntId: ids.tntId } : {},
+    experienceCloud: { analytics: { logging: 'server_side' } },
+    execute: {
+      pageLoad: {
+        parameters: { at_property: '' }, // set your Target property token if used
+        profileParameters: {
+          persona: String(profile.persona),
+          loggedIn: String(!!profile.loggedIn),
+          region: profile.region || '',
+        },
+      },
+      mboxes: [{
+        index: 0,
+        name: TARGET_MBOX,
+        profileParameters: {
+          persona: String(profile.persona),
+          loggedIn: String(!!profile.loggedIn),
+          region: profile.region || '',
+        },
+      }],
+    },
+  };
+  const endpoint = `https://${TARGET_CLIENT}.tt.omtrdc.net/rest/v1/delivery`
+    + `?client=${TARGET_CLIENT}&sessionId=${encodeURIComponent(ids.sessionId)}`;
+  const resp = await fetch(endpoint, {
+    method: 'POST',
+    backend: 'target',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!resp.ok) throw new Error(`target ${resp.status}`);
+  const data = await resp.json();
+  if (data && data.id && data.id.tntId) ids.tntId = data.id.tntId;
+  // collect option contents from pageLoad + mboxes
+  const opts = [];
+  const pageLoad = data?.execute?.pageLoad?.options || [];
+  const mboxes = (data?.execute?.mboxes || []).flatMap((m) => m.options || []);
+  [...pageLoad, ...mboxes].forEach((o) => { if (o && o.content != null) opts.push(o.content); });
+  return { options: opts, persona: profile.persona };
+}
+
+function stubDecision(profile) {
   const meta = PERSONA[profile.persona] || { name: 'Default', color: '#333333' };
-  return { persona: profile.persona, label: meta.name, color: meta.color };
+  return { options: [], persona: profile.persona, stub: meta };
 }
 
+/* ---- inject the experience server-side ----
+ * Supports two authoring styles, no DOM required at the edge:
+ *  A) JSON offer: { "token": "hero", "html": "<...>" }  -> replaces <!-- target:hero --> in the page
+ *  B) HTML offer: a raw HTML string -> injected at <!-- target:main --> if present, else after <body>
+ * Falls back to a persona banner (stub mode or when no offer matched).
+ */
 function injectExperience(html, decision, profile) {
-  const banner = `<div data-edge-persona style="position:sticky;top:0;z-index:10000;`
-    + `background:${decision.color};color:#fff;font:600 14px/1.4 system-ui,sans-serif;`
-    + `padding:8px 16px;text-align:center">`
-    + `Edge decision &#8594; Persona ${decision.persona}: ${escapeHtml(decision.label)}`
-    + `${profile.loggedIn ? ' &#183; logged in' : ' &#183; guest'}`
-    + `${profile.region ? ' &#183; ' + escapeHtml(profile.region) : ''}`
-    + `</div>`;
-  return html.replace(/<body[^>]*>/i, (m) => m + banner);
+  let out = html;
+  let applied = false;
+  (decision.options || []).forEach((content) => {
+    if (content && typeof content === 'object' && content.token) {
+      const marker = `<!-- target:${content.token} -->`;
+      if (out.includes(marker)) { out = out.split(marker).join(content.html || ''); applied = true; }
+    } else if (typeof content === 'string') {
+      const marker = '<!-- target:main -->';
+      if (out.includes(marker)) { out = out.split(marker).join(content); applied = true; }
+      else { out = out.replace(/<body[^>]*>/i, (m) => m + content); applied = true; }
+    }
+  });
+  if (!applied) out = out.replace(/<body[^>]*>/i, (m) => m + personaBanner(decision, profile));
+  return out;
 }
 
+function personaBanner(decision, profile) {
+  const meta = decision.stub || PERSONA[profile.persona] || { name: 'Default', color: '#333333' };
+  return `<div data-edge-persona style="position:sticky;top:0;z-index:10000;background:${meta.color};`
+    + `color:#fff;font:600 14px/1.4 system-ui,sans-serif;padding:8px 16px;text-align:center">`
+    + `Edge decision &#8594; Persona ${profile.persona}: ${escapeHtml(meta.name)}`
+    + `${profile.loggedIn ? ' &#183; logged in' : ' &#183; guest'}`
+    + `${profile.region ? ' &#183; ' + escapeHtml(profile.region) : ''}</div>`;
+}
+
+/* ---- helpers ---- */
+function cookie(name, value) {
+  return `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=2592000; SameSite=Lax`;
+}
 function parseCookies(str) {
   const out = {};
   str.split(';').forEach((c) => {
@@ -80,6 +168,9 @@ function parseCookies(str) {
     if (i > -1) out[c.slice(0, i).trim()] = decodeURIComponent(c.slice(i + 1).trim());
   });
   return out;
+}
+function cryptoRandom() {
+  return 'sid-' + Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
