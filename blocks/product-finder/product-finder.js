@@ -39,8 +39,14 @@ function esc(s) {
 
 export default async function decorate(block) {
   const params = new URLSearchParams(window.location.search);
-  const state = { q: (params.get('q') || '').trim(), sel: {}, expanded: {} };
-  FACETS.forEach(([k]) => { state.sel[k] = new Set(); state.expanded[k] = false; });
+  const state = {
+    q: (params.get('q') || '').trim(), sel: {}, expanded: {}, groupOpen: {},
+  };
+  FACETS.forEach(([k]) => {
+    state.sel[k] = new Set();
+    state.expanded[k] = false;
+    state.groupOpen[k] = (k === 'industries'); // only Industries open by default
+  });
   const LIMIT = 15;
 
   block.innerHTML = `
@@ -101,7 +107,7 @@ export default async function decorate(block) {
       const more = values.length > LIMIT
         ? `<button type="button" class="pf-more" data-facet="${esc(key)}">${expanded ? 'Show less' : `+${values.length - LIMIT} more`}</button>`
         : '';
-      return `<details class="pf-group" open><summary>${esc(label)}</summary>${opts}${more}</details>`;
+      return `<details class="pf-group" data-facet="${esc(key)}"${state.groupOpen[key] ? ' open' : ''}><summary>${esc(label)}</summary>${opts}${more}</details>`;
     }).join('');
     clearBtn.hidden = totalSelected() === 0;
   };
@@ -139,6 +145,13 @@ export default async function decorate(block) {
     state.expanded[key] = !state.expanded[key];
     renderFacets();
   });
+  // remember which groups the user opens/closes (toggle does not bubble -> capture)
+  groupsEl.addEventListener('toggle', (e) => {
+    const d = e.target;
+    if (d.classList && d.classList.contains('pf-group') && d.dataset.facet) {
+      state.groupOpen[d.dataset.facet] = d.open;
+    }
+  }, true);
   clearBtn.addEventListener('click', () => {
     FACETS.forEach(([k]) => state.sel[k].clear());
     rerender();
