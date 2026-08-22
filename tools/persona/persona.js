@@ -5,9 +5,9 @@ const PERSONAS = [
     name: 'Technical Evaluator',
     description: 'A Lead Systems Architect, Product Engineer, R&D Scientist, or Technical Specialist evaluating materials, technologies, specifications, and compatibility. Visits product pages, downloads spec sheets, and views technical documentation.',
     interests: [
-      { label: 'Data sheets & spec...', value: 60 },
-      { label: 'API/integration det...', value: 45 },
-      { label: 'Architecture diagra...', value: 35 },
+      { label: 'Data sheets & specifications', value: 60 },
+      { label: 'API/integration details', value: 45 },
+      { label: 'Architecture diagrams', value: 35 },
     ],
     intent: {
       Explore: 0.35, Research: 0.85, Compare: 0.7, Purchase: 0.15, Deals: 0.1, Support: 0.45,
@@ -20,9 +20,9 @@ const PERSONAS = [
     name: 'Business Decision Maker',
     description: 'A VP Innovation, Business Unit Leader, Manufacturing Executive, or Product Development Leader looking for business outcomes and strategic value. Visits solutions, strategy, innovation, ESG, and executive content.',
     interests: [
-      { label: 'Innovation stories...', value: 55 },
-      { label: 'ROI & digital transf...', value: 50 },
-      { label: 'Sustainability impa...', value: 30 },
+      { label: 'Innovation stories', value: 55 },
+      { label: 'ROI & digital transformation', value: 50 },
+      { label: 'Sustainability impact', value: 30 },
     ],
     intent: {
       Explore: 0.6, Research: 0.45, Compare: 0.3, Purchase: 0.4, Deals: 0.15, Support: 0.2,
@@ -35,9 +35,9 @@ const PERSONAS = [
     name: 'Procurement & Sourcing Manager',
     description: 'A Strategic Sourcing Manager, Procurement Director, or Vendor Manager focused on risk reduction and supplier evaluation. Visits compliance, sourcing, sustainability, and supplier pages.',
     interests: [
-      { label: 'Sustainability cred...', value: 55 },
-      { label: 'Certifications & co...', value: 50 },
-      { label: 'Supply chain reliab...', value: 40 },
+      { label: 'Sustainability credentials', value: 55 },
+      { label: 'Certifications & compliance', value: 50 },
+      { label: 'Supplier reliability', value: 40 },
     ],
     intent: {
       Explore: 0.2, Research: 0.6, Compare: 0.55, Purchase: 0.3, Deals: 0.15, Support: 0.5,
@@ -50,9 +50,9 @@ const PERSONAS = [
     name: 'Industry Researcher',
     description: 'A student, industry analyst, sustainability researcher, individual engineer, or future customer champion in a learning and discovery mode, not purchasing. Arrives from search and consumes blogs and educational content.',
     interests: [
-      { label: 'Educational blogs...', value: 50 },
-      { label: 'Sustainability storie...', value: 45 },
-      { label: 'Innovation showcase...', value: 35 },
+      { label: 'Educational blogs', value: 50 },
+      { label: 'Sustainability stories', value: 45 },
+      { label: 'Innovation showcases', value: 35 },
     ],
     intent: {
       Explore: 0.75, Research: 0.4, Compare: 0.15, Purchase: 0.05, Deals: 0.1, Support: 0.15,
