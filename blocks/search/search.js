@@ -1,5 +1,6 @@
-// Full-page search backed by /query-index.json. Reads ?q= from the URL,
-// renders a search field and a live results list.
+// Search backed by /query-index.json. Reads ?q= from the URL and renders a
+// search field + live results. Optionally scoped to a path prefix authored in
+// the block (e.g. a cell containing "/products/") to make a product finder.
 
 let indexCache;
 async function loadIndex() {
@@ -36,13 +37,27 @@ function highlight(text, q) {
   return out + esc(src.slice(last));
 }
 
+function resultCard(r, q) {
+  return `<a class="search-result" href="${esc(r.path)}">
+    <span class="search-result-title">${highlight(r.title || r.path, q)}</span>
+    <span class="search-result-path">${esc(r.path)}</span>
+    ${r.description ? `<span class="search-result-desc">${highlight(r.description, q)}</span>` : ''}
+  </a>`;
+}
+
 export default async function decorate(block) {
+  // optional path scope authored in the block (e.g. "/products/")
+  const cfg = block.textContent.trim();
+  const scope = /^\/\S+/.test(cfg) ? cfg.split(/\s+/)[0] : '';
+  const noun = scope ? 'products' : 'results';
+  const placeholder = scope ? 'Search products' : 'Search DuPont';
+
   const params = new URLSearchParams(window.location.search);
   const initial = (params.get('q') || '').trim();
 
   block.innerHTML = `
     <div class="search-field">
-      <input type="search" class="search-input" placeholder="Search DuPont" aria-label="Search" value="${esc(initial)}">
+      <input type="search" class="search-input" placeholder="${placeholder}" aria-label="${placeholder}" value="${esc(initial)}">
     </div>
     <div class="search-results" aria-live="polite"></div>`;
   const input = block.querySelector('.search-input');
@@ -50,28 +65,32 @@ export default async function decorate(block) {
 
   const run = async (query) => {
     const q = query.trim();
-    // keep the URL shareable/bookmarkable
     const url = new URL(window.location);
     if (q) url.searchParams.set('q', q); else url.searchParams.delete('q');
     window.history.replaceState({}, '', url);
 
-    if (!q) { out.innerHTML = ''; return; }
     const data = await loadIndex();
+    const pool = scope ? data.filter((r) => (r.path || '').startsWith(scope)) : data;
+
+    if (!q) {
+      if (!scope) { out.innerHTML = ''; return; }
+      // browse mode: list everything in scope
+      out.innerHTML = `<p class="search-count">${pool.length} ${noun}</p>`
+        + pool.slice(0, 50).map((r) => resultCard(r, '')).join('');
+      return;
+    }
+
     const needle = q.toLowerCase();
-    const matches = data.filter((r) => `${r.title || ''} ${r.description || ''} ${r.path || ''}`
+    const matches = pool.filter((r) => `${r.title || ''} ${r.description || ''} ${r.path || ''}`
       .toLowerCase().includes(needle));
-    out.innerHTML = `<p class="search-count">${matches.length} result${matches.length === 1 ? '' : 's'} for “${esc(q)}”</p>`
-      + matches.slice(0, 50).map((r) => `<a class="search-result" href="${esc(r.path)}">
-        <span class="search-result-title">${highlight(r.title || r.path, q)}</span>
-        <span class="search-result-path">${esc(r.path)}</span>
-        ${r.description ? `<span class="search-result-desc">${highlight(r.description, q)}</span>` : ''}
-      </a>`).join('');
+    out.innerHTML = `<p class="search-count">${matches.length} ${noun.replace(/s$/, '')}${matches.length === 1 ? '' : 's'} for “${esc(q)}”</p>`
+      + matches.slice(0, 50).map((r) => resultCard(r, q)).join('');
   };
 
   let debounce;
   input.addEventListener('input', () => { clearTimeout(debounce); debounce = setTimeout(() => run(input.value), 180); });
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { clearTimeout(debounce); run(input.value); } });
 
-  if (initial) run(initial);
+  run(initial); // browse-all when scoped and empty; results when q present
   input.focus();
 }
