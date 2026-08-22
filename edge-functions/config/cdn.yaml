@@ -1,0 +1,10 @@
+# Route demo paths to the persona-decision edge function.
+# Start with /water; add more paths as the demo expands.
+data:
+  originSelectors:
+    rules:
+      - name: route-persona-water
+        when: { reqProperty: path, equals: "/water" }
+        action:
+          type: selectAemOrigin
+          originName: edgefunction-persona-decision
