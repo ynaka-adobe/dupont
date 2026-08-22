@@ -125,26 +125,45 @@ function stubDecision(profile) {
   return { options: [], persona: profile.persona, stub: meta };
 }
 
-/* ---- inject the experience server-side ----
- * Supports two authoring styles, no DOM required at the edge:
- *  A) JSON offer: { "token": "hero", "html": "<...>" }  -> replaces <!-- target:hero --> in the page
- *  B) HTML offer: a raw HTML string -> injected at <!-- target:main --> if present, else after <body>
- * Falls back to a persona banner (stub mode or when no offer matched).
+/* ---- inject the experience server-side (token-based, no DOM at the edge) ----
+ * Target returns JSON offers shaped as { "token": "hero", "html": "<...>" }
+ * (or an array of them). The author marks a spot in the page one of two ways:
+ *   1) a text token typed anywhere in the content:   [[target:hero]]
+ *      (survives EDS rendering; if alone in a <p>, the <p> wrapper is replaced too)
+ *   2) a slot element:   <div class="target-slot" data-token="hero"></div>
+ * The edge swaps the marker for the offer HTML. Falls back to the persona banner
+ * when no offer matched (e.g. no activity live yet).
  */
+function normalizeOffers(options) {
+  const res = [];
+  (options || []).forEach((c) => {
+    let val = c;
+    if (typeof val === 'string') { try { val = JSON.parse(val); } catch (e) { return; } }
+    (Array.isArray(val) ? val : [val]).forEach((o) => {
+      if (o && o.token) res.push({ token: String(o.token), html: o.html || o.content || '' });
+    });
+  });
+  return res;
+}
+
 function injectExperience(html, decision, profile) {
   let out = html;
-  let applied = false;
-  (decision.options || []).forEach((content) => {
-    if (content && typeof content === 'object' && content.token) {
-      const marker = `<!-- target:${content.token} -->`;
-      if (out.includes(marker)) { out = out.split(marker).join(content.html || ''); applied = true; }
-    } else if (typeof content === 'string') {
-      const marker = '<!-- target:main -->';
-      if (out.includes(marker)) { out = out.split(marker).join(content); applied = true; }
-      else { out = out.replace(/<body[^>]*>/i, (m) => m + content); applied = true; }
-    }
+  normalizeOffers(decision.options).forEach(({ token, html: content }) => {
+    const t = escapeRe(token);
+    out = out
+      .replace(new RegExp('<p>\\s*\\[\\[target:' + t + '\\]\\]\\s*</p>', 'g'), () => content)
+      .replace(new RegExp('\\[\\[target:' + t + '\\]\\]', 'g'), () => content)
+      .replace(
+        new RegExp('<div([^>]*)data-token="' + t + '"([^>]*)>[\\s\\S]*?</div>', 'g'),
+        (_m, a, b) => `<div${a}data-token="${token}"${b}>${content}</div>`,
+      );
   });
-  if (!applied) out = out.replace(/<body[^>]*>/i, (m) => m + personaBanner(decision, profile));
+  const applied = out !== html;
+  // strip any leftover unfilled tokens so they never render as raw text
+  out = out.replace(/<p>\s*\[\[target:[^\]]+\]\]\s*<\/p>/g, '').replace(/\[\[target:[^\]]+\]\]/g, '');
+  if (!applied && decision.persona) {
+    out = out.replace(/<body[^>]*>/i, (m) => m + personaBanner(decision, profile));
+  }
   return out;
 }
 
@@ -174,4 +193,7 @@ function cryptoRandom() {
 }
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function escapeRe(s) {
+  return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
