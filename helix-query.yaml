@@ -29,3 +29,35 @@ indices:
         select: head > meta[name='robots']
         value: |
           attribute(el, 'content')
+      industries:
+        select: head > meta[name='industries']
+        value: |
+          attribute(el, 'content')
+      industrySegments:
+        select: head > meta[name='industrySegments']
+        value: |
+          attribute(el, 'content')
+      technologies:
+        select: head > meta[name='technologies']
+        value: |
+          attribute(el, 'content')
+      applications:
+        select: head > meta[name='applications']
+        value: |
+          attribute(el, 'content')
+      productLines:
+        select: head > meta[name='productLines']
+        value: |
+          attribute(el, 'content')
+      brands:
+        select: head > meta[name='brands']
+        value: |
+          attribute(el, 'content')
+      type:
+        select: head > meta[name='type']
+        value: |
+          attribute(el, 'content')
+      solutions:
+        select: head > meta[name='solutions']
+        value: |
+          attribute(el, 'content')
