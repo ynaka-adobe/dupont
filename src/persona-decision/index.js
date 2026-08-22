@@ -13,7 +13,7 @@
  *   - 'origin'  -> https://main--dupont--ynaka-adobe.aem.live   (content)
  *   - 'target'  -> https://<TARGET_CLIENT>.tt.omtrdc.net         (Adobe Target)
  */
-const TARGET_CLIENT = '';                 // e.g. 'dupont'  <-- set to enable real Target
+const TARGET_CLIENT = 'acsmarketing'; // Target client code (public; not a secret)
 const TARGET_MBOX = 'target-global-mbox';
 const ORIGIN = 'https://main--dupont--ynaka-adobe.aem.live';
 
