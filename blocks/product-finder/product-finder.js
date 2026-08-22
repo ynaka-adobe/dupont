@@ -43,9 +43,10 @@ export default async function decorate(block) {
     q: (params.get('q') || '').trim(), sel: {}, expanded: {}, groupOpen: {},
   };
   FACETS.forEach(([k]) => {
-    state.sel[k] = new Set();
+    state.sel[k] = new Set(params.getAll(k)); // restore selections from the URL
     state.expanded[k] = false;
-    state.groupOpen[k] = (k === 'industries'); // only Industries open by default
+    // Industries open by default; also open any facet arriving with a selection
+    state.groupOpen[k] = (k === 'industries') || state.sel[k].size > 0;
   });
   const LIMIT = 15;
 
@@ -124,7 +125,10 @@ export default async function decorate(block) {
 
   const syncUrl = () => {
     const url = new URL(window.location);
-    if (state.q) url.searchParams.set('q', state.q); else url.searchParams.delete('q');
+    url.searchParams.delete('q');
+    FACETS.forEach(([k]) => url.searchParams.delete(k));
+    if (state.q) url.searchParams.set('q', state.q);
+    FACETS.forEach(([k]) => state.sel[k].forEach((v) => url.searchParams.append(k, v)));
     window.history.replaceState({}, '', url);
   };
 
