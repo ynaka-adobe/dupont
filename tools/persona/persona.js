@@ -153,11 +153,57 @@ function renderPersona(persona) {
   renderRadar(document.getElementById('persona-radar'), persona.intent);
 }
 
+const REGIONS = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL',
+  'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH',
+  'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT',
+  'VA', 'WA', 'WV', 'WI', 'WY', 'DC'];
+
+// The palette runs in an iframe on the content page; rewrite the parent page's
+// URL so the edge function / client picks up the persona signals.
+function targetWindow() {
+  try { void window.top.location.href; return window.top; } catch (e) { return window; }
+}
+
+function applyToUrl() {
+  const win = targetWindow();
+  let url;
+  try { url = new URL(win.location.href); } catch (e) { return; }
+  const p = Number(document.getElementById('persona-select').value) + 1;
+  url.searchParams.set('p', String(p));
+  url.searchParams.set('li', document.getElementById('persona-loggedin').checked ? 'true' : 'false');
+  const region = document.getElementById('persona-region').value;
+  if (region) url.searchParams.set('region', region); else url.searchParams.delete('region');
+  win.location.href = url.toString();
+}
+
+function readParamsIntoControls(select, loggedin, region) {
+  try {
+    const params = new URL(window.top.location.href).searchParams;
+    const p = Number(params.get('p'));
+    if (p >= 1 && p <= PERSONAS.length) select.value = String(p - 1);
+    const li = params.get('li');
+    if (li !== null) loggedin.checked = (li === '1' || li === 'true');
+    const r = params.get('region');
+    if (r) region.value = r.toUpperCase();
+  } catch (e) { /* cross-origin: leave defaults */ }
+}
+
 function init() {
   const select = document.getElementById('persona-select');
+  const loggedin = document.getElementById('persona-loggedin');
+  const region = document.getElementById('persona-region');
+
   select.innerHTML = PERSONAS.map((p, i) => `<option value="${i}">${p.name}</option>`).join('');
-  select.addEventListener('change', () => renderPersona(PERSONAS[Number(select.value)]));
-  renderPersona(PERSONAS[0]);
+  region.innerHTML = '<option value="">Region (state)</option>'
+    + REGIONS.map((c) => `<option value="${c}">${c}</option>`).join('');
+
+  readParamsIntoControls(select, loggedin, region);
+
+  select.addEventListener('change', () => { renderPersona(PERSONAS[Number(select.value)]); applyToUrl(); });
+  loggedin.addEventListener('change', applyToUrl);
+  region.addEventListener('change', applyToUrl);
+
+  renderPersona(PERSONAS[Number(select.value)]);
 }
 
 init();
