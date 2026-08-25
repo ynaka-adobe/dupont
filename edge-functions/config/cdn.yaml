@@ -1,10 +1,20 @@
-# Route demo paths to the persona-decision edge function.
-# Start with /water; add more paths as the demo expands.
+kind: 'CDN'
+version: '1'
 data:
   originSelectors:
     rules:
+      - name: route-persona-home
+        when: { reqProperty: path, equals: "/" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
       - name: route-persona-water
         when: { reqProperty: path, equals: "/water" }
-        action:
-          type: selectAemOrigin
-          originName: edgefunction-my-edge-function
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-automotive
+        when: { reqProperty: path, equals: "/industries/automotive" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-healthcare
+        when: { reqProperty: path, equals: "/industries/healthcare-and-medical" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-about
+        when: { reqProperty: path, equals: "/about" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
