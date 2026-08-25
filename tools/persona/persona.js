@@ -175,18 +175,20 @@ function pageContext() {
   return { win: window, url: new URL(window.location.href) };
 }
 
-function navigate(url, win) {
-  try { win.location.href = url.toString(); } catch (e) { window.location.href = url.toString(); }
+// Open/refresh a dedicated preview tab so the palette itself stays open (a full
+// reload is required for the edge to re-personalize server-side).
+function openPreview(url) {
+  window.open(url.toString(), 'persona-preview');
 }
 
 function applyToUrl() {
-  const { win, url } = pageContext();
+  const { url } = pageContext();
   const p = Number(document.getElementById('persona-select').value) + 1;
   url.searchParams.set('p', String(p));
   url.searchParams.set('li', document.getElementById('persona-loggedin').checked ? 'true' : 'false');
   const region = document.getElementById('persona-region').value;
   if (region) url.searchParams.set('region', region); else url.searchParams.delete('region');
-  navigate(url, win);
+  openPreview(url);
 }
 
 function resetUrl(select, loggedin, region) {
@@ -194,9 +196,9 @@ function resetUrl(select, loggedin, region) {
   loggedin.checked = false;
   region.value = '';
   renderPersona(PERSONAS[0]);
-  const { win, url } = pageContext();
+  const { url } = pageContext();
   ['p', 'li', 'region'].forEach((k) => url.searchParams.delete(k));
-  navigate(url, win);
+  openPreview(url);
 }
 
 function readParamsIntoControls(select, loggedin, region) {
