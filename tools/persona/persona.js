@@ -176,6 +176,18 @@ function applyToUrl() {
   win.location.href = url.toString();
 }
 
+function resetUrl(select, loggedin, region) {
+  select.value = '0';
+  loggedin.checked = false;
+  region.value = '';
+  renderPersona(PERSONAS[0]);
+  const win = targetWindow();
+  let url;
+  try { url = new URL(win.location.href); } catch (e) { return; }
+  ['p', 'li', 'region'].forEach((k) => url.searchParams.delete(k));
+  win.location.href = url.toString();
+}
+
 function readParamsIntoControls(select, loggedin, region) {
   try {
     const params = new URL(window.top.location.href).searchParams;
@@ -202,6 +214,7 @@ function init() {
   select.addEventListener('change', () => { renderPersona(PERSONAS[Number(select.value)]); applyToUrl(); });
   loggedin.addEventListener('change', applyToUrl);
   region.addEventListener('change', applyToUrl);
+  document.getElementById('persona-reset').addEventListener('click', () => resetUrl(select, loggedin, region));
 
   renderPersona(PERSONAS[Number(select.value)]);
 }
