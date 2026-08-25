@@ -1,3 +1,6 @@
+import { allowDynamicBackends } from 'fastly:experimental';
+allowDynamicBackends(true);
+
 /* Edge function: persona-decision  (AEM Edge Delivery / Fastly Compute JS)
  *
  * Resolves persona/loggedIn/region from the ?p= query param (first hit) or the
@@ -34,7 +37,7 @@ async function handleRequest(event) {
   const ids = resolveIds(cookies);
 
   // 1) base page from the content origin
-  const originResp = await fetch(ORIGIN + url.pathname, { backend: 'origin' });
+  const originResp = await fetch(ORIGIN + url.pathname);
   let html = await originResp.text();
 
   // 2) decision at the edge
@@ -105,7 +108,6 @@ async function targetDeliver(url, profile, ids) {
     + `?client=${TARGET_CLIENT}&sessionId=${encodeURIComponent(ids.sessionId)}`;
   const resp = await fetch(endpoint, {
     method: 'POST',
-    backend: 'target',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   });

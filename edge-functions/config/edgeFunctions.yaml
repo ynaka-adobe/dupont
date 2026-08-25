@@ -2,4 +2,4 @@ kind: "EdgeFunctions"
 version: "1"
 data:
   functions:
-    - name: persona-decision
+    - name: my-edge-function

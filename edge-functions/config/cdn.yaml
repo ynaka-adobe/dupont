@@ -7,4 +7,4 @@ data:
         when: { reqProperty: path, equals: "/water" }
         action:
           type: selectAemOrigin
-          originName: edgefunction-persona-decision
+          originName: edgefunction-my-edge-function
