@@ -17,7 +17,7 @@ allowDynamicBackends(true);
  *   - 'target'  -> https://<TARGET_CLIENT>.tt.omtrdc.net         (Adobe Target)
  */
 const TARGET_CLIENT = 'acsmarketing'; // Target client code (public; not a secret)
-const TARGET_MBOX = 'target-global-mbox';
+// Activities run on target-global-mbox (the global mbox), delivered via pageLoad.
 const ORIGIN = 'https://main--dupont--ynaka-adobe.aem.live';
 
 const PERSONA = {
@@ -82,26 +82,21 @@ function resolveIds(cookies) {
 async function targetDeliver(url, profile, ids) {
   const body = {
     context: { channel: 'web', address: { url: `https://www.dupont.com${url.pathname}` } },
-    id: ids.tntId ? { tntId: ids.tntId } : {},
+    // Only send `id` when we actually have a tntId — an empty id:{} makes Target 400.
+    ...(ids.tntId ? { id: { tntId: ids.tntId } } : {}),
     experienceCloud: { analytics: { logging: 'server_side' } },
+    // target-global-mbox is the GLOBAL mbox — it is delivered via pageLoad, NOT
+    // as a named entry in execute.mboxes (Target rejects that with a 400
+    // "global mbox is not allowed in mboxes"). XT/AB activities on the global
+    // mbox return their offer in execute.pageLoad.options.
     execute: {
       pageLoad: {
-        parameters: { at_property: '' }, // set your Target property token if used
         profileParameters: {
           persona: String(profile.persona),
           loggedIn: String(!!profile.loggedIn),
           region: profile.region || '',
         },
       },
-      mboxes: [{
-        index: 0,
-        name: TARGET_MBOX,
-        profileParameters: {
-          persona: String(profile.persona),
-          loggedIn: String(!!profile.loggedIn),
-          region: profile.region || '',
-        },
-      }],
     },
   };
   const endpoint = `https://${TARGET_CLIENT}.tt.omtrdc.net/rest/v1/delivery`
