@@ -158,19 +158,28 @@ const REGIONS = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI
   'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT',
   'VA', 'WA', 'WV', 'WI', 'WY', 'DC'];
 
-// The palette runs in an iframe on the content page. Resolve the page URL from a
-// same-origin ancestor when possible, else fall back to document.referrer (works
-// when the palette is served cross-origin). Navigation of window.top is allowed
-// cross-origin even when reading its href is not.
+// The palette runs in an iframe served from the preview host, i.e. cross-origin
+// with the content page — so window.top.location is unreadable. The Sidekick
+// passes the real content URL (incl. its query string) as a ?referrer= param
+// when the plugin config sets "passReferrer": true; that is the authoritative
+// source. Fall back to a same-origin ancestor, then document.referrer.
+// Navigation of window.top IS allowed cross-origin even when reading is not.
 function pageContext() {
+  let navWin = window;
+  try { navWin = window.top || window.parent || window; } catch (e) { navWin = window.parent || window; }
+
+  try {
+    const ref = new URLSearchParams(window.location.search).get('referrer');
+    if (ref) return { win: navWin, url: new URL(ref) };
+  } catch (e) { /* noop */ }
+
   const ancestors = [];
   try { if (window.top && window.top !== window) ancestors.push(window.top); } catch (e) { /* noop */ }
   try { if (window.parent && window.parent !== window) ancestors.push(window.parent); } catch (e) { /* noop */ }
   for (let i = 0; i < ancestors.length; i += 1) {
     try { return { win: ancestors[i], url: new URL(ancestors[i].location.href) }; } catch (e) { /* cross-origin */ }
   }
-  let navWin = window;
-  try { navWin = window.top || window.parent || window; } catch (e) { navWin = window.parent || window; }
+
   try { if (document.referrer) return { win: navWin, url: new URL(document.referrer) }; } catch (e) { /* noop */ }
   return { win: window, url: new URL(window.location.href) };
 }
