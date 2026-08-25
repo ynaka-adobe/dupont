@@ -151,16 +151,29 @@ function normalizeOffers(options) {
 
 function injectExperience(html, decision, profile) {
   let out = html;
+  let applied = false;
+  const unplacedHero = [];
   normalizeOffers(decision.options).forEach(({ token, html: content }) => {
     const t = escapeRe(token);
+    const before = out;
     out = out
       // 1) empty slot block: inject offer HTML just inside <div class="target-slot-<token>...">
       .replace(new RegExp('(<div class="target-slot-' + t + '[^"]*"[^>]*>)', 'g'), (_m, open) => open + content)
       // 2) text token, optionally alone in a paragraph
       .replace(new RegExp('<p>\\s*\\[\\[target:' + t + '\\]\\]\\s*</p>', 'g'), () => content)
       .replace(new RegExp('\\[\\[target:' + t + '\\]\\]', 'g'), () => content);
+    if (out !== before) applied = true;
+    else if (token === 'hero' && content) unplacedHero.push(content); // no slot on this page
   });
-  const applied = out !== html;
+  // Pages without an explicit target-slot-hero block (i.e. every routed nav page
+  // that wasn't hand-authored with a slot): drop the hero at the top of <main>
+  // so the offer still personalizes the page. The offer HTML is self-contained.
+  if (unplacedHero.length) {
+    const content = unplacedHero.join('');
+    if (/<main[^>]*>/i.test(out)) out = out.replace(/(<main[^>]*>)/i, (m) => m + content);
+    else out = out.replace(/<body[^>]*>/i, (m) => m + content);
+    applied = true;
+  }
   // strip any leftover unfilled tokens so they never render as raw text
   out = out.replace(/<p>\s*\[\[target:[^\]]+\]\]\s*<\/p>/g, '').replace(/\[\[target:[^\]]+\]\]/g, '');
   if (!applied && decision.persona) {
