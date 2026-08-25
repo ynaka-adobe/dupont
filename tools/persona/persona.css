@@ -220,16 +220,34 @@ body {
   margin: 0;
 }
 
-.persona-reset {
+.persona-actions {
   margin-left: auto;
+  display: inline-flex;
+  gap: 8px;
+}
+
+.persona-apply,
+.persona-reset {
   border: 1px solid #c7c7c7;
   background: #fff;
   color: #444;
   font: inherit;
   font-size: 12px;
-  padding: 5px 12px;
+  padding: 5px 14px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.persona-apply {
+  border-color: #0072ce;
+  background: #0072ce;
+  color: #fff;
+  font-weight: 600;
+}
+
+.persona-apply:hover {
+  background: #005bb0;
+  border-color: #005bb0;
 }
 
 .persona-reset:hover {

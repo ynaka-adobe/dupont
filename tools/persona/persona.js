@@ -175,20 +175,28 @@ function pageContext() {
   return { win: window, url: new URL(window.location.href) };
 }
 
-// Open/refresh a dedicated preview tab so the palette itself stays open (a full
-// reload is required for the edge to re-personalize server-side).
-function openPreview(url) {
-  window.open(url.toString(), 'persona-preview');
+// Navigate the actual content page so the edge re-personalizes it server-side.
+// The Sidekick palette closes when it loses focus, so we do this ONCE on an
+// explicit Apply — never on every control change — letting the user set the
+// persona, the logged-in toggle, and the region while the palette stays open.
+function navigateTo(url) {
+  const { win } = pageContext();
+  try { win.location.href = url.toString(); } catch (e) { window.open(url.toString(), '_top'); }
 }
 
-function applyToUrl() {
+// Build the personalized URL from the current selections (no navigation).
+function buildUrl() {
   const { url } = pageContext();
   const p = Number(document.getElementById('persona-select').value) + 1;
   url.searchParams.set('p', String(p));
   url.searchParams.set('li', document.getElementById('persona-loggedin').checked ? 'true' : 'false');
   const region = document.getElementById('persona-region').value;
   if (region) url.searchParams.set('region', region); else url.searchParams.delete('region');
-  openPreview(url);
+  return url;
+}
+
+function applyToUrl() {
+  navigateTo(buildUrl());
 }
 
 function resetUrl(select, loggedin, region) {
@@ -198,7 +206,7 @@ function resetUrl(select, loggedin, region) {
   renderPersona(PERSONAS[0]);
   const { url } = pageContext();
   ['p', 'li', 'region'].forEach((k) => url.searchParams.delete(k));
-  openPreview(url);
+  navigateTo(url);
 }
 
 function readParamsIntoControls(select, loggedin, region) {
@@ -225,9 +233,11 @@ function init() {
 
   readParamsIntoControls(select, loggedin, region);
 
-  select.addEventListener('change', () => { renderPersona(PERSONAS[Number(select.value)]); applyToUrl(); });
-  loggedin.addEventListener('change', applyToUrl);
-  region.addEventListener('change', applyToUrl);
+  // Control changes only update the palette's own preview card — they do NOT
+  // navigate, so the palette stays open while all three are set. Navigation
+  // happens once, on Apply.
+  select.addEventListener('change', () => renderPersona(PERSONAS[Number(select.value)]));
+  document.getElementById('persona-apply').addEventListener('click', applyToUrl);
   document.getElementById('persona-reset').addEventListener('click', () => resetUrl(select, loggedin, region));
 
   renderPersona(PERSONAS[Number(select.value)]);
