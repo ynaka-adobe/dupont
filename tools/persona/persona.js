@@ -158,22 +158,35 @@ const REGIONS = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI
   'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT',
   'VA', 'WA', 'WV', 'WI', 'WY', 'DC'];
 
-// The palette runs in an iframe on the content page; rewrite the parent page's
-// URL so the edge function / client picks up the persona signals.
-function targetWindow() {
-  try { void window.top.location.href; return window.top; } catch (e) { return window; }
+// The palette runs in an iframe on the content page. Resolve the page URL from a
+// same-origin ancestor when possible, else fall back to document.referrer (works
+// when the palette is served cross-origin). Navigation of window.top is allowed
+// cross-origin even when reading its href is not.
+function pageContext() {
+  const ancestors = [];
+  try { if (window.top && window.top !== window) ancestors.push(window.top); } catch (e) { /* noop */ }
+  try { if (window.parent && window.parent !== window) ancestors.push(window.parent); } catch (e) { /* noop */ }
+  for (let i = 0; i < ancestors.length; i += 1) {
+    try { return { win: ancestors[i], url: new URL(ancestors[i].location.href) }; } catch (e) { /* cross-origin */ }
+  }
+  let navWin = window;
+  try { navWin = window.top || window.parent || window; } catch (e) { navWin = window.parent || window; }
+  try { if (document.referrer) return { win: navWin, url: new URL(document.referrer) }; } catch (e) { /* noop */ }
+  return { win: window, url: new URL(window.location.href) };
+}
+
+function navigate(url, win) {
+  try { win.location.href = url.toString(); } catch (e) { window.location.href = url.toString(); }
 }
 
 function applyToUrl() {
-  const win = targetWindow();
-  let url;
-  try { url = new URL(win.location.href); } catch (e) { return; }
+  const { win, url } = pageContext();
   const p = Number(document.getElementById('persona-select').value) + 1;
   url.searchParams.set('p', String(p));
   url.searchParams.set('li', document.getElementById('persona-loggedin').checked ? 'true' : 'false');
   const region = document.getElementById('persona-region').value;
   if (region) url.searchParams.set('region', region); else url.searchParams.delete('region');
-  win.location.href = url.toString();
+  navigate(url, win);
 }
 
 function resetUrl(select, loggedin, region) {
@@ -181,23 +194,22 @@ function resetUrl(select, loggedin, region) {
   loggedin.checked = false;
   region.value = '';
   renderPersona(PERSONAS[0]);
-  const win = targetWindow();
-  let url;
-  try { url = new URL(win.location.href); } catch (e) { return; }
+  const { win, url } = pageContext();
   ['p', 'li', 'region'].forEach((k) => url.searchParams.delete(k));
-  win.location.href = url.toString();
+  navigate(url, win);
 }
 
 function readParamsIntoControls(select, loggedin, region) {
   try {
-    const params = new URL(window.top.location.href).searchParams;
+    const { url } = pageContext();
+    const params = url.searchParams;
     const p = Number(params.get('p'));
     if (p >= 1 && p <= PERSONAS.length) select.value = String(p - 1);
     const li = params.get('li');
     if (li !== null) loggedin.checked = (li === '1' || li === 'true');
     const r = params.get('region');
     if (r) region.value = r.toUpperCase();
-  } catch (e) { /* cross-origin: leave defaults */ }
+  } catch (e) { /* leave defaults */ }
 }
 
 function init() {
