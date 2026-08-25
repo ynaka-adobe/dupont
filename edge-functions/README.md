@@ -1,4 +1,4 @@
-# southwest-edge-functions
+# edge-functions
 
 An [AEM Edge Function](https://experienceleague.adobe.com/en/docs/experience-manager-cloud-service/content/implementing/developing/edge-functions)
 that returns the visitor's geolocation (derived from their IP by Fastly) for
