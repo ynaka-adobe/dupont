@@ -5,16 +5,16 @@ data:
     rules:
       - name: route-persona-home
         when: { reqProperty: path, equals: "/" }
-        action: { type: selectAemOrigin, originName: edgefunction-p154856-d608502-my-edge-function, skipCache: true }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
       - name: route-persona-water
         when: { reqProperty: path, equals: "/water" }
-        action: { type: selectAemOrigin, originName: edgefunction-p154856-d608502-my-edge-function, skipCache: true }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
       - name: route-persona-automotive
         when: { reqProperty: path, equals: "/industries/automotive" }
-        action: { type: selectAemOrigin, originName: edgefunction-p154856-d608502-my-edge-function, skipCache: true }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
       - name: route-persona-healthcare
         when: { reqProperty: path, equals: "/industries/healthcare-and-medical" }
-        action: { type: selectAemOrigin, originName: edgefunction-p154856-d608502-my-edge-function, skipCache: true }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
       - name: route-persona-about
         when: { reqProperty: path, equals: "/about" }
-        action: { type: selectAemOrigin, originName: edgefunction-p154856-d608502-my-edge-function, skipCache: true }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
