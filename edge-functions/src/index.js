@@ -21,11 +21,28 @@ const TARGET_CLIENT = 'acsmarketing'; // Target client code (public; not a secre
 const ORIGIN = 'https://main--dupont--ynaka-adobe.aem.live';
 
 const PERSONA = {
-  1: { name: 'Technical Evaluator', color: '#0072ce' },
-  2: { name: 'Business Decision Maker', color: '#e1261c' },
-  3: { name: 'Procurement Manager', color: '#00884a' },
-  4: { name: 'Industry Researcher', color: '#6a1b9a' },
+  1: { name: 'Technical Evaluator', color: '#0072ce', color2: '#004a86' },
+  2: { name: 'Business Decision Maker', color: '#e1261c', color2: '#8f1410' },
+  3: { name: 'Procurement Manager', color: '#00884a', color2: '#00542e' },
+  4: { name: 'Industry Researcher', color: '#6a1b9a', color2: '#3f0f5c' },
 };
+
+// Wrap a plain-content hero offer (e.g. a DA Experience Fragment, whose inline
+// styles are stripped by the authoring pipeline) in a styled, self-contained
+// hero shell using the persona's colors — a scoped <style>, no site-CSS needed.
+function wrapHero(content, persona) {
+  const m = PERSONA[persona] || { color: '#0072ce', color2: '#004a86' };
+  return `<section data-persona-hero style="background:linear-gradient(120deg,${m.color},${m.color2});`
+    + 'color:#fff;padding:48px 24px;text-align:center;font-family:system-ui,Arial,sans-serif">'
+    + '<style>[data-persona-hero]>div{max-width:860px;margin:0 auto}'
+    + '[data-persona-hero] p{font-size:17px;line-height:1.5;margin:0 auto 16px;max-width:640px;opacity:.95}'
+    + '[data-persona-hero] p:first-child{font:600 12px/1.4 system-ui;letter-spacing:1.5px;'
+    + 'text-transform:uppercase;opacity:.85;margin:0 0 12px}'
+    + '[data-persona-hero] h1{font-size:34px;line-height:1.15;margin:0 0 14px;font-weight:700}'
+    + `[data-persona-hero] a{display:inline-block;background:#fff;color:${m.color};font-weight:700;`
+    + 'font-size:15px;text-decoration:none;padding:13px 28px;border-radius:4px}'
+    + `</style>${content}</section>`;
+}
 
 addEventListener('fetch', (event) => event.respondWith(handleRequest(event)));
 
@@ -141,11 +158,12 @@ function normalizeOffers(options) {
     if (typeof val === 'string') {
       const s = val.trim();
       if (s[0] === '{' || s[0] === '[') { try { val = JSON.parse(s); } catch (e) { /* keep as html */ } }
-      if (typeof val === 'string') { if (s) res.push({ token: 'hero', html: s }); return; }
+      // `raw` = a plain HTML offer (no styling of its own) → edge wraps it.
+      if (typeof val === 'string') { if (s) res.push({ token: 'hero', html: s, raw: true }); return; }
     }
     (Array.isArray(val) ? val : [val]).forEach((o) => {
       if (o && o.token) res.push({ token: String(o.token), html: o.html || o.content || '' });
-      else if (typeof o === 'string' && o.trim()) res.push({ token: 'hero', html: o });
+      else if (typeof o === 'string' && o.trim()) res.push({ token: 'hero', html: o, raw: true });
     });
   });
   return res;
@@ -155,8 +173,11 @@ function injectExperience(html, decision, profile) {
   let out = html;
   let applied = false;
   const unplacedHero = [];
-  normalizeOffers(decision.options).forEach(({ token, html: content }) => {
+  normalizeOffers(decision.options).forEach(({ token, html: rawHtml, raw }) => {
     const t = escapeRe(token);
+    // Plain offers (DA Experience Fragments) get the styled hero shell; offers
+    // that already carry their own styling (JSON offers) are injected as-is.
+    const content = raw && token === 'hero' ? wrapHero(rawHtml, profile.persona) : rawHtml;
     const before = out;
     out = out
       // 1) empty slot block: inject offer HTML just inside <div class="target-slot-<token>...">
