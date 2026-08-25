@@ -209,16 +209,41 @@ function resetUrl(select, loggedin, region) {
   navigateTo(url);
 }
 
+// Resolve the current selections. head.html persists them durably as a
+// `demoProfile` object (localStorage + cookie) on the content page, which
+// survives navigation and URL cleanup — read that first from an accessible
+// ancestor window, then fall back to the URL query params.
+function getCurrentProfile() {
+  const wins = [];
+  try { if (window.top && window.top !== window) wins.push(window.top); } catch (e) { /* noop */ }
+  try { if (window.parent && window.parent !== window) wins.push(window.parent); } catch (e) { /* noop */ }
+  wins.push(window);
+  for (let i = 0; i < wins.length; i += 1) {
+    try {
+      const raw = wins[i].localStorage.getItem('demoProfile');
+      if (raw) return JSON.parse(raw);
+    } catch (e) { /* cross-origin / unavailable */ }
+    try {
+      const m = wins[i].document.cookie.match(/(?:^|;\s*)demoProfile=([^;]+)/);
+      if (m) return JSON.parse(decodeURIComponent(m[1]));
+    } catch (e) { /* cross-origin / unavailable */ }
+  }
+  try {
+    const q = pageContext().url.searchParams;
+    const prof = {};
+    const p = q.get('p'); if (p) prof.persona = parseInt(p, 10);
+    const li = q.get('li'); if (li !== null) prof.loggedIn = (li === '1' || li === 'true');
+    const r = q.get('region'); if (r) prof.region = r.toUpperCase();
+    return prof;
+  } catch (e) { return {}; }
+}
+
 function readParamsIntoControls(select, loggedin, region) {
   try {
-    const { url } = pageContext();
-    const params = url.searchParams;
-    const p = Number(params.get('p'));
-    if (p >= 1 && p <= PERSONAS.length) select.value = String(p - 1);
-    const li = params.get('li');
-    if (li !== null) loggedin.checked = (li === '1' || li === 'true');
-    const r = params.get('region');
-    if (r) region.value = r.toUpperCase();
+    const prof = getCurrentProfile();
+    if (prof.persona >= 1 && prof.persona <= PERSONAS.length) select.value = String(prof.persona - 1);
+    if (typeof prof.loggedIn === 'boolean') loggedin.checked = prof.loggedIn;
+    if (prof.region) region.value = String(prof.region).toUpperCase();
   } catch (e) { /* leave defaults */ }
 }
 
