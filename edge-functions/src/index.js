@@ -136,9 +136,16 @@ function normalizeOffers(options) {
   const res = [];
   (options || []).forEach((c) => {
     let val = c;
-    if (typeof val === 'string') { try { val = JSON.parse(val); } catch (e) { return; } }
+    // A JSON offer ({token,html} or an array) is parsed; anything else (e.g. a
+    // plain HTML Experience Fragment offer pushed from DA) is treated as a hero.
+    if (typeof val === 'string') {
+      const s = val.trim();
+      if (s[0] === '{' || s[0] === '[') { try { val = JSON.parse(s); } catch (e) { /* keep as html */ } }
+      if (typeof val === 'string') { if (s) res.push({ token: 'hero', html: s }); return; }
+    }
     (Array.isArray(val) ? val : [val]).forEach((o) => {
       if (o && o.token) res.push({ token: String(o.token), html: o.html || o.content || '' });
+      else if (typeof o === 'string' && o.trim()) res.push({ token: 'hero', html: o });
     });
   });
   return res;
