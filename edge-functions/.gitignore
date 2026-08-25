@@ -8,3 +8,4 @@ serve.txt
 body*.html
 *OAuth Server-to-Server*.json
 *-Production.json
+package-lock.json
