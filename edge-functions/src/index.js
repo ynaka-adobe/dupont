@@ -17,7 +17,7 @@ allowDynamicBackends(true);
  *   - 'target'  -> https://<TARGET_CLIENT>.tt.omtrdc.net         (Adobe Target)
  */
 const TARGET_CLIENT = 'acsmarketing'; // Target client code (public; not a secret)
-// Activities run on target-global-mbox (the global mbox), delivered via pageLoad.
+const TARGET_MBOX = 'target-slot-hero'; // regular mbox the XT activity runs on
 const ORIGIN = 'https://main--dupont--ynaka-adobe.aem.live';
 
 const PERSONA = {
@@ -96,24 +96,27 @@ function resolveIds(cookies) {
 }
 
 /* ---- Adobe Target server-side Delivery API ---- */
+function profileParams(profile) {
+  return {
+    persona: String(profile.persona),
+    loggedIn: String(!!profile.loggedIn),
+    region: profile.region || '',
+  };
+}
+
 async function targetDeliver(url, profile, ids) {
   const body = {
     context: { channel: 'web', address: { url: `https://www.dupont.com${url.pathname}` } },
     // Only send `id` when we actually have a tntId — an empty id:{} makes Target 400.
     ...(ids.tntId ? { id: { tntId: ids.tntId } } : {}),
     experienceCloud: { analytics: { logging: 'server_side' } },
-    // target-global-mbox is the GLOBAL mbox — it is delivered via pageLoad, NOT
-    // as a named entry in execute.mboxes (Target rejects that with a 400
-    // "global mbox is not allowed in mboxes"). XT/AB activities on the global
-    // mbox return their offer in execute.pageLoad.options.
+    // The activity runs on the regular mbox `target-slot-hero` (NOT the global
+    // mbox), so request it by name in execute.mboxes and read the offer from
+    // execute.mboxes[].options. pageLoad is kept too so a global-mbox activity
+    // would still work (its offer comes back in pageLoad.options).
     execute: {
-      pageLoad: {
-        profileParameters: {
-          persona: String(profile.persona),
-          loggedIn: String(!!profile.loggedIn),
-          region: profile.region || '',
-        },
-      },
+      pageLoad: { profileParameters: profileParams(profile) },
+      mboxes: [{ index: 0, name: TARGET_MBOX, profileParameters: profileParams(profile) }],
     },
   };
   const endpoint = `https://${TARGET_CLIENT}.tt.omtrdc.net/rest/v1/delivery`
