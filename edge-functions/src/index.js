@@ -32,6 +32,8 @@ const PERSONA = {
 // hero shell using the persona's colors — a scoped <style>, no site-CSS needed.
 function wrapHero(content, persona) {
   const m = PERSONA[persona] || { color: '#0072ce', color2: '#004a86' };
+  // Strip the EDS metadata block (holds adobe.target.offerId) if it rode along.
+  content = String(content || '').replace(/<div class="metadata">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/gi, '').trim();
   return `<section data-persona-hero style="background:linear-gradient(120deg,${m.color},${m.color2});`
     + 'color:#fff;padding:48px 24px;text-align:center;font-family:system-ui,Arial,sans-serif">'
     + '<style>[data-persona-hero]>div{max-width:860px;margin:0 auto}'
