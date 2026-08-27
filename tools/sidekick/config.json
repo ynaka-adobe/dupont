@@ -16,7 +16,7 @@
       "title": "Target",
       "url": "https://experience.adobe.com/#/@acsmarketing/target/activities/activityLibrary",
       "passConfig": true,
-      "environments": ["preview", "live", "edit"],
+      "environments": ["preview", "live", "edit","prod"],
       "includePaths": ["**"]
     },
     {
@@ -26,7 +26,7 @@
       "isPalette": true,
       "passReferrer": true,
       "paletteRect": "top: 40px; right: 0; width: 400px; height: calc(100% - 40px);",
-      "environments": ["preview", "live", "edit","production"],
+      "environments": ["preview", "live", "edit","prod"],
       "includePaths": ["**"]
     }
   ]
