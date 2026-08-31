@@ -18,7 +18,6 @@ allowDynamicBackends(true);
  */
 const TARGET_CLIENT = 'acsmarketing'; // Target client code (public; not a secret)
 const TARGET_MBOX = 'target-slot-hero'; // regular mbox the XT activity runs on
-const ORIGIN = 'https://main--dupont--ynaka-adobe.aem.live';
 
 const PERSONA = {
   1: { name: 'Technical Evaluator', color: '#0072ce', color2: '#004a86' },
@@ -26,6 +25,12 @@ const PERSONA = {
   3: { name: 'Procurement Manager', color: '#00884a', color2: '#00542e' },
   4: { name: 'Industry Researcher', color: '#6a1b9a', color2: '#3f0f5c' },
 };
+
+function getOrigin(req) {
+  const host = req.headers.get('host') || '';
+  const site = host.split('.')[0];
+  return `https://main--${site}--ynaka-adobe.aem.live`;
+}
 
 // Wrap a plain-content hero offer (e.g. a DA Experience Fragment, whose inline
 // styles are stripped by the authoring pipeline) in a styled, self-contained
@@ -55,8 +60,8 @@ async function handleRequest(event) {
   const profile = resolveProfile(cookies, url);
   const ids = resolveIds(cookies);
 
-  // 1) base page from the content origin
-  const originResp = await fetch(ORIGIN + url.pathname);
+  // 1) base page from the content origin (host → main--<site>--ynaka-adobe.aem.live)
+  const originResp = await fetch(getOrigin(req) + url.pathname + (url.search || ''));
   let html = await originResp.text();
 
   // 2) decision at the edge
