@@ -53,14 +53,21 @@ function wrapHero(content, persona) {
   const inner = String(content || '')
     .replace(/<div class="metadata">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/gi, '').trim();
   return `<section data-persona-hero style="background:linear-gradient(120deg,${m.color},${m.color2});`
-    + 'color:#fff;padding:48px 24px;text-align:center;font-family:system-ui,Arial,sans-serif">'
+    + 'color:#fff;padding:44px 24px;text-align:center;font-family:system-ui,Arial,sans-serif">'
     + '<style>[data-persona-hero]>div{max-width:860px;margin:0 auto}'
-    + '[data-persona-hero] p{font-size:17px;line-height:1.5;margin:0 auto 16px;max-width:640px;opacity:.95}'
+    + '[data-persona-hero] p{font-size:16px;line-height:1.5;margin:0 auto 16px;max-width:680px;opacity:.95}'
     + '[data-persona-hero] p:first-child{font:600 12px/1.4 system-ui;letter-spacing:1.5px;'
     + 'text-transform:uppercase;opacity:.85;margin:0 0 12px}'
-    + '[data-persona-hero] h1{font-size:34px;line-height:1.15;margin:0 0 14px;font-weight:700}'
-    + `[data-persona-hero] a{display:inline-block;background:#fff;color:${m.color};font-weight:700;`
-    + 'font-size:15px;text-decoration:none;padding:13px 28px;border-radius:4px}'
+    + '[data-persona-hero] h1,[data-persona-hero] h2{font-size:32px;line-height:1.15;margin:0 0 12px;font-weight:700}'
+    + '[data-persona-hero] a{color:#fff;text-decoration:underline}'
+    + `[data-persona-hero] p a{display:inline-block;background:#fff;color:${m.color};font-weight:700;`
+    + 'font-size:15px;text-decoration:none;padding:12px 26px;border-radius:4px}'
+    + '[data-persona-hero] ul{list-style:none;padding:14px 0 0;margin:22px auto 0;max-width:520px;'
+    + 'text-align:left;border-top:1px solid rgba(255,255,255,.25)}'
+    + '[data-persona-hero] ul::before{content:"RECOMMENDED READING";display:block;'
+    + 'font:600 11px/1.4 system-ui;letter-spacing:1px;opacity:.7;margin-bottom:6px}'
+    + '[data-persona-hero] li{margin:4px 0}'
+    + '[data-persona-hero] li a{font-size:13px;opacity:.9;display:block}'
     + `</style>${inner}</section>`;
 }
 
