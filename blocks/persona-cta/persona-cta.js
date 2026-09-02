@@ -31,7 +31,7 @@ export default function decorate(block) {
   const chosen = (persona && map[persona]) ? map[persona] : def;
 
   const a = document.createElement('a');
-  a.className = 'button persona-cta-link';
+  a.className = 'persona-cta-link';
   a.href = chosen.href;
   a.textContent = chosen.label;
   if (persona && map[persona]) a.dataset.persona = persona;
