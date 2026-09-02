@@ -1,12 +1,33 @@
 .persona-cta {
   display: flex;
-  justify-content: center;
-  margin: 24px 0;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  margin: 32px auto;
+  max-width: 760px;
+}
+
+.persona-cta .persona-cta-heading {
+  margin: 0;
+  font-family: var(--heading-font-family);
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 1.15;
+  color: var(--text-color, #1a1a1a);
+}
+
+.persona-cta .persona-cta-body {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--text-color, #1a1a1a);
 }
 
 /* Match the site's outlined-pill CTA (e.g. "Why work with us"). */
 .persona-cta a.persona-cta-link:any-link {
   display: inline-block;
+  margin-top: 4px;
   background: transparent;
   border: 2px solid var(--text-color, #1a1a1a);
   border-radius: 2.4em;
