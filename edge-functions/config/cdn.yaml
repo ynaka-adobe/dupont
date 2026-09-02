@@ -2,7 +2,88 @@ kind: 'CDN'
 version: '1'
 data:
   originSelectors:
-    # Personalization moved to the client-side target-slot-hero block, so no
-    # pages are routed through the edge function any more. Empty = serve every
-    # page normally from the Edge Delivery CDN (fully cached, no edge hop).
-    rules: []
+    rules:
+      - name: route-persona-home
+        when: { reqProperty: path, equals: "/" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-about
+        when: { reqProperty: path, equals: "/about" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-about-inclusion
+        when: { reqProperty: path, equals: "/about/Inclusion" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-about-awards-and-recognition
+        when: { reqProperty: path, equals: "/about/awards-and-recognition" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-about-community-impact
+        when: { reqProperty: path, equals: "/about/community-impact" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-about-leadership
+        when: { reqProperty: path, equals: "/about/leadership" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-about-our-people
+        when: { reqProperty: path, equals: "/about/our-people" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-about-our-values
+        when: { reqProperty: path, equals: "/about/our-values" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-about-science-and-innovation
+        when: { reqProperty: path, equals: "/about/science-and-innovation" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-about-sustainability
+        when: { reqProperty: path, equals: "/about/sustainability" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-brands
+        when: { reqProperty: path, equals: "/brands" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries
+        when: { reqProperty: path, equals: "/industries" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-aerospace
+        when: { reqProperty: path, equals: "/industries/aerospace" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-automotive
+        when: { reqProperty: path, equals: "/industries/automotive" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-building-and-construction
+        when: { reqProperty: path, equals: "/industries/building-and-construction" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-electronics-fabrication-testing
+        when: { reqProperty: path, equals: "/industries/electronics-fabrication-testing" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-energy
+        when: { reqProperty: path, equals: "/industries/energy" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-fashion-textiles
+        when: { reqProperty: path, equals: "/industries/fashion-textiles" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-food-beverage
+        when: { reqProperty: path, equals: "/industries/food-beverage" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-government-and-public-sector
+        when: { reqProperty: path, equals: "/industries/government-and-public-sector" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-healthcare-and-medical
+        when: { reqProperty: path, equals: "/industries/healthcare-and-medical" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-manufacturing-industrial
+        when: { reqProperty: path, equals: "/industries/manufacturing-industrial" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-industries-packaging-and-printing
+        when: { reqProperty: path, equals: "/industries/packaging-and-printing" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-locations
+        when: { reqProperty: path, equals: "/locations" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-microsites-discover
+        when: { reqProperty: path, equals: "/microsites/discover" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-news
+        when: { reqProperty: path, equals: "/news" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-solution-finder
+        when: { reqProperty: path, equals: "/solution-finder" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
+      - name: route-persona-water
+        when: { reqProperty: path, equals: "/water" }
+        action: { type: selectAemOrigin, originName: edgefunction-my-edge-function, skipCache: true }
