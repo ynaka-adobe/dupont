@@ -1,5 +1,5 @@
-// Persona-tailored CTA labels for card "Learn more" links. Default (no persona)
-// keeps whatever the author wrote (e.g. "Learn more").
+// Persona-tailored card CTA labels + optional per-persona body copy.
+// Default (no persona) keeps the authored label and description.
 const PERSONA_LABELS = {
   1: 'View specifications',
   2: 'See innovation & ROI',
@@ -13,10 +13,24 @@ function personaId() {
   return new URLSearchParams(window.location.search).get('p') || '';
 }
 
-// Tailor each card's CTA to the active persona: swap the label and carry the
-// persona param to the destination so it persists on navigation.
-function personalizeCtas(block) {
-  const pid = personaId();
+// An optional extra card cell holds per-persona copy, one line each:
+//   1: Technical-focused blurb
+//   2: Business-focused blurb  ... (also accepts "1 text", "1. text", "1) text")
+function parseOverrides(cell) {
+  const map = {};
+  cell.querySelectorAll('p, li').forEach((el) => {
+    const m = (el.textContent || '').trim().match(/^(\d+)\s*[:.)-]?\s+(.+)$/s);
+    if (m) map[m[1]] = m[2].trim();
+  });
+  return map;
+}
+
+function isImageCell(div) {
+  return div.children.length === 1 && !!div.querySelector('picture');
+}
+
+// Swap each card's CTA label per persona and carry the persona param onward.
+function personalizeCtas(block, pid) {
   if (!pid) return;
   const label = PERSONA_LABELS[pid];
   block.querySelectorAll('a').forEach((a) => {
@@ -29,17 +43,36 @@ function personalizeCtas(block) {
 }
 
 export default function decorate(block) {
-  /* change to ul, li */
+  const pid = personaId();
   const ul = document.createElement('ul');
+
   [...block.children].forEach((row) => {
+    const cells = [...row.children];
+    const nonImage = cells.filter((d) => !isImageCell(d));
+    // 2+ non-image cells → the last one is the persona-overrides column.
+    let overrides = null;
+    if (nonImage.length >= 2) {
+      const ovCell = nonImage[nonImage.length - 1];
+      overrides = parseOverrides(ovCell);
+      ovCell.remove();
+    }
+
     const li = document.createElement('li');
     while (row.firstElementChild) li.append(row.firstElementChild);
     [...li.children].forEach((div) => {
-      if (div.children.length === 1 && div.querySelector('picture')) div.className = 'cards-card-image';
-      else div.className = 'cards-card-body';
+      div.className = isImageCell(div) ? 'cards-card-image' : 'cards-card-body';
     });
+
+    // Replace the card's description (first non-CTA paragraph) for this persona.
+    if (pid && overrides && overrides[pid]) {
+      const body = li.querySelector('.cards-card-body');
+      const desc = body && [...body.querySelectorAll('p')].find((p) => !p.querySelector('a'));
+      if (desc) desc.textContent = overrides[pid];
+    }
+
     ul.append(li);
   });
+
   block.replaceChildren(ul);
-  personalizeCtas(block);
+  personalizeCtas(block, pid);
 }
