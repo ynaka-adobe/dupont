@@ -1,0 +1,26 @@
+.persona-cta {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.persona-cta .persona-cta-link {
+  display: inline-block;
+  padding: 12px 34px;
+  border: 1px solid #0072ce;
+  border-radius: 25px;
+  background: #0072ce;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.persona-cta .persona-cta-link:hover {
+  background: #005bb0;
+  border-color: #005bb0;
+  color: #fff;
+  text-decoration: none;
+}
