@@ -330,14 +330,64 @@ function renderActionBar(onActivityCreated) {
     }
   });
 
-  wrapper.append(btn, flyout, changeBtn);
+  const insertBtn = document.createElement('button');
+  insertBtn.className = 'btn-change hidden';
+  insertBtn.textContent = 'Insert into Page';
+  insertBtn.addEventListener('click', async () => {
+    const activity = insertBtn._activity;
+    if (!activity) return;
+
+    insertBtn.disabled = true;
+    insertBtn.textContent = 'Inserting…';
+
+    try {
+      const daContext = await Promise.race([
+        DA_SDK,
+        new Promise((resolve) => setTimeout(() => resolve(null), 1500)),
+      ]);
+
+      if (!daContext) {
+        throw new Error('DA context not available');
+      }
+
+      const mboxName = activity.name.toLowerCase().replace(/\s+/g, '-');
+
+      // Create the target-offer block content
+      const blockContent = document.createElement('div');
+      blockContent.className = 'target-offer';
+      blockContent.innerHTML = `
+        <div>
+          <p><strong>${activity.name}</strong></p>
+        </div>
+        <div>
+          <p class="target-offer-mbox">${mboxName}</p>
+        </div>
+      `;
+
+      // Add block to the page via DA SDK
+      daContext.editContext.blocks.add(blockContent.innerHTML, 'target-offer');
+      insertBtn.textContent = 'Inserted!';
+      setTimeout(() => {
+        insertBtn.disabled = false;
+        insertBtn.textContent = 'Insert into Page';
+      }, 1500);
+    } catch (err) {
+      alert(`Failed to insert block: ${err.message}`);
+      insertBtn.disabled = false;
+      insertBtn.textContent = 'Insert into Page';
+    }
+  });
+
+  wrapper.append(btn, flyout, changeBtn, insertBtn);
 
   wrapper.setSelected = (hasSelection, activity = null) => {
     btn.disabled = hasSelection;
     btn.classList.toggle('disabled', hasSelection);
     flyout.classList.add('hidden');
     changeBtn.classList.toggle('hidden', !hasSelection);
+    insertBtn.classList.toggle('hidden', !hasSelection);
     changeBtn._activity = activity;
+    insertBtn._activity = activity;
   };
 
   return wrapper;
