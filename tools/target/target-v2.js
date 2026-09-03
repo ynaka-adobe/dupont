@@ -357,7 +357,17 @@ function renderActionBar(onActivityCreated) {
 
       // Fetch full activity details to get the location/mbox
       const activityDetails = await fetchActivityDetails(activity.id);
-      const mboxName = activityDetails.location || activity.location || activity.mbox || 'target-global-mbox';
+      console.log('Activity details:', activityDetails);
+      console.log('Activity object:', activity);
+
+      // Try multiple property names for the mbox location
+      const mboxName = activityDetails.location
+        || activityDetails.mbox
+        || activityDetails.locationName
+        || activity.location
+        || activity.mbox
+        || activity.locationName
+        || 'target-global-mbox';
 
       // Build empty target-offer block with one empty row
       const offerBlockHtml = `<table><tbody>`
