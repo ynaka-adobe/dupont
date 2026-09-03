@@ -14,21 +14,14 @@ async function fetchActivities() {
   return activities ?? [];
 }
 
-async function fetchActivityDetails(activityId) {
+async function fetchActivityDetails(activityId, activityType) {
   try {
-    const response = await runtimeFetch({ resource: 'activity-details', activityId });
+    const response = await runtimeFetch({ resource: 'activity', id: activityId, type: activityType, version: 'v3' });
     console.log('Raw activity details response:', response);
-    return response.activity ?? response ?? {};
+    return response ?? {};
   } catch (err) {
-    console.log('Activity details fetch failed, trying alternate endpoint...');
-    try {
-      const response = await runtimeFetch({ activityId, detailed: 'true' });
-      console.log('Alternate response:', response);
-      return response;
-    } catch (err2) {
-      console.error('Both activity detail endpoints failed:', err, err2);
-      return {};
-    }
+    console.error('Activity details fetch failed:', err);
+    return {};
   }
 }
 
@@ -373,20 +366,12 @@ function renderActionBar(onActivityCreated) {
         throw new Error('DA context not available');
       }
 
-      console.log('Fetching activity details for ID:', activity.id);
+      console.log('Fetching activity details for ID:', activity.id, activity.type);
       // Fetch full activity details to get the location/mbox
-      const activityDetails = await fetchActivityDetails(activity.id);
+      const activityDetails = await fetchActivityDetails(activity.id, activity.type);
       console.log('Activity details:', activityDetails);
-      console.log('Activity object:', activity);
 
-      // Try multiple property names for the mbox location
-      const mboxName = activityDetails.location
-        || activityDetails.mbox
-        || activityDetails.locationName
-        || activity.location
-        || activity.mbox
-        || activity.locationName
-        || 'target-global-mbox';
+      const mboxName = activityDetails.locations?.mboxes?.[0]?.name || 'target-global-mbox';
       console.log('Using mbox name:', mboxName);
 
       // Build empty target-offer block with one empty row
