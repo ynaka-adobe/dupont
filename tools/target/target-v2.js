@@ -14,6 +14,11 @@ async function fetchActivities() {
   return activities ?? [];
 }
 
+async function fetchActivityDetails(activityId) {
+  const { activity } = await runtimeFetch({ resource: 'activity', id: activityId });
+  return activity ?? {};
+}
+
 async function fetchOffers() {
   const { offers } = await runtimeFetch({ resource: 'offers' });
   return offers ?? [];
@@ -350,6 +355,10 @@ function renderActionBar(onActivityCreated) {
         throw new Error('DA context not available');
       }
 
+      // Fetch full activity details to get the location/mbox
+      const activityDetails = await fetchActivityDetails(activity.id);
+      const mboxName = activityDetails.location || activity.location || activity.mbox || 'target-global-mbox';
+
       // Build empty target-offer block with one empty row
       const offerBlockHtml = `<table><tbody>`
         + `<tr><td>target-offer</td></tr>`
@@ -361,7 +370,7 @@ function renderActionBar(onActivityCreated) {
         + `<tr><td colspan="2">metadata</td></tr>`
         + `<tr><td>Experience</td><td>${activity.name}</td></tr>`
         + `<tr><td>target</td><td>on</td></tr>`
-        + `<tr><td>target-mbox-hero</td><td>${activity.location || activity.mbox || 'target-global-mbox'}</td></tr>`
+        + `<tr><td>target-mbox-hero</td><td>${mboxName}</td></tr>`
         + `<tr><td>target-mbox-hero-selector</td><td>.target-offer</td></tr>`
         + `<tr><td>activity</td><td>${activity.id}</td></tr>`
         + `</tbody></table>`;
