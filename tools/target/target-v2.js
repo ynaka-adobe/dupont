@@ -340,12 +340,17 @@ function renderActionBar(onActivityCreated) {
   insertBtn.textContent = 'Insert into Page';
   insertBtn.addEventListener('click', async () => {
     const activity = insertBtn._activity;
-    if (!activity) return;
+    console.log('Insert button clicked, activity:', activity);
+    if (!activity) {
+      console.log('No activity selected');
+      return;
+    }
 
     insertBtn.disabled = true;
     insertBtn.textContent = 'Inserting…';
 
     try {
+      console.log('Fetching DA context...');
       const daContext = await Promise.race([
         DA_SDK,
         new Promise((resolve) => setTimeout(() => resolve(null), 1500)),
@@ -355,6 +360,7 @@ function renderActionBar(onActivityCreated) {
         throw new Error('DA context not available');
       }
 
+      console.log('Fetching activity details for ID:', activity.id);
       // Fetch full activity details to get the location/mbox
       const activityDetails = await fetchActivityDetails(activity.id);
       console.log('Activity details:', activityDetails);
@@ -368,6 +374,7 @@ function renderActionBar(onActivityCreated) {
         || activity.mbox
         || activity.locationName
         || 'target-global-mbox';
+      console.log('Using mbox name:', mboxName);
 
       // Build empty target-offer block with one empty row
       const offerBlockHtml = `<table><tbody>`
@@ -394,6 +401,7 @@ function renderActionBar(onActivityCreated) {
         insertBtn.textContent = 'Insert into Page';
       }, 1500);
     } catch (err) {
+      console.error('Insert error:', err);
       alert(`Failed to insert block: ${err.message}`);
       insertBtn.disabled = false;
       insertBtn.textContent = 'Insert into Page';
