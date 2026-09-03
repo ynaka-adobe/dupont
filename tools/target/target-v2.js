@@ -352,14 +352,15 @@ function renderActionBar(onActivityCreated) {
 
       const mboxName = activity.name.toLowerCase().replace(/\s+/g, '-');
 
-      // Build empty target-offer block
+      // Build empty target-offer block with one empty row
       const offerBlockHtml = `<table><tbody>`
         + `<tr><td>target-offer</td></tr>`
+        + `<tr><td></td></tr>`
         + `</tbody></table>`;
 
       // Build metadata block with activity configuration
       const metadataBlockHtml = `<table><tbody>`
-        + `<tr><td>metadata</td></tr>`
+        + `<tr><td colspan="2">metadata</td></tr>`
         + `<tr><td>Experience</td><td>${activity.name}</td></tr>`
         + `<tr><td>target</td><td>on</td></tr>`
         + `<tr><td>target-mbox-hero</td><td>${mboxName}</td></tr>`
