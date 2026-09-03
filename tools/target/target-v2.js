@@ -346,26 +346,22 @@ function renderActionBar(onActivityCreated) {
         new Promise((resolve) => setTimeout(() => resolve(null), 1500)),
       ]);
 
-      if (!daContext) {
+      if (!daContext?.actions?.sendHTML) {
         throw new Error('DA context not available');
       }
 
       const mboxName = activity.name.toLowerCase().replace(/\s+/g, '-');
 
-      // Create the target-offer block content
-      const blockContent = document.createElement('div');
-      blockContent.className = 'target-offer';
-      blockContent.innerHTML = `
-        <div>
-          <p><strong>${activity.name}</strong></p>
-        </div>
-        <div>
-          <p class="target-offer-mbox">${mboxName}</p>
-        </div>
-      `;
+      // Build the target-offer block HTML (DA table format)
+      const blockHtml = `<table><tbody>`
+        + `<tr><td>target-offer</td></tr>`
+        + `<tr><td>${mboxName}</td></tr>`
+        + `<tr><td>${activity.name} — default content</td></tr>`
+        + `</tbody></table>`;
 
-      // Add block to the page via DA SDK
-      daContext.editContext.blocks.add(blockContent.innerHTML, 'target-offer');
+      // Send HTML to be inserted into the page
+      daContext.actions.sendHTML(blockHtml);
+
       insertBtn.textContent = 'Inserted!';
       setTimeout(() => {
         insertBtn.disabled = false;
