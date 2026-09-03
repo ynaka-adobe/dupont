@@ -12,6 +12,11 @@ import {
   buildBlock,
 } from './aem.js';
 
+import {
+  loadTarget,
+  applyTargetHeroMboxIfConfigured,
+} from './target.js';
+
 if (window.trustedTypes && window.trustedTypes.createPolicy) {
   const innerTT = window.trustedTypes.createPolicy('tt-inner', {
     createHTML: (s) => s, // avoid stack overflow
@@ -221,6 +226,8 @@ function loadDelayed() {
 async function loadPage() {
   await loadEager(document);
   await loadLazy(document);
+  await loadTarget();
+  await applyTargetHeroMboxIfConfigured();
   loadDelayed();
 }
 
