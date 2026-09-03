@@ -352,15 +352,23 @@ function renderActionBar(onActivityCreated) {
 
       const mboxName = activity.name.toLowerCase().replace(/\s+/g, '-');
 
-      // Build the target-offer block HTML (DA table format)
-      const blockHtml = `<table><tbody>`
+      // Build empty target-offer block
+      const offerBlockHtml = `<table><tbody>`
         + `<tr><td>target-offer</td></tr>`
-        + `<tr><td>${mboxName}</td></tr>`
-        + `<tr><td>${activity.name} — default content</td></tr>`
         + `</tbody></table>`;
 
-      // Send HTML to be inserted into the page
-      daContext.actions.sendHTML(blockHtml);
+      // Build metadata block with activity configuration
+      const metadataBlockHtml = `<table><tbody>`
+        + `<tr><td>metadata</td></tr>`
+        + `<tr><td>Experience</td><td>${activity.name}</td></tr>`
+        + `<tr><td>target</td><td>on</td></tr>`
+        + `<tr><td>target-mbox-hero</td><td>${mboxName}</td></tr>`
+        + `<tr><td>target-mbox-hero-selector</td><td>.target-offer</td></tr>`
+        + `<tr><td>activity</td><td>${activity.id}</td></tr>`
+        + `</tbody></table>`;
+
+      // Send both blocks to be inserted into the page
+      daContext.actions.sendHTML(offerBlockHtml + metadataBlockHtml);
 
       insertBtn.textContent = 'Inserted!';
       setTimeout(() => {
