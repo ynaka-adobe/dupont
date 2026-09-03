@@ -15,8 +15,21 @@ async function fetchActivities() {
 }
 
 async function fetchActivityDetails(activityId) {
-  const { activity } = await runtimeFetch({ resource: 'activity', id: activityId });
-  return activity ?? {};
+  try {
+    const response = await runtimeFetch({ resource: 'activity-details', activityId });
+    console.log('Raw activity details response:', response);
+    return response.activity ?? response ?? {};
+  } catch (err) {
+    console.log('Activity details fetch failed, trying alternate endpoint...');
+    try {
+      const response = await runtimeFetch({ activityId, detailed: 'true' });
+      console.log('Alternate response:', response);
+      return response;
+    } catch (err2) {
+      console.error('Both activity detail endpoints failed:', err, err2);
+      return {};
+    }
+  }
 }
 
 async function fetchOffers() {
