@@ -155,6 +155,13 @@ function extractStats(activity) {
 
 // ── Campaign card ──────────────────────────────────────────────────────────────
 
+function getActivationLocation(activity) {
+  return activity.mbox
+    || activity.locations?.mboxes?.[0]?.name
+    || (activity.campaignType && activity.variant ? `${activity.campaignType}-${activity.variant}` : '')
+    || '\u2014';
+}
+
 function buildCampaignCard(activity, wfProject, onAction) {
   const status = targetStatusToDisplay(activity.state);
   const stats = extractStats(activity);
@@ -170,11 +177,25 @@ function buildCampaignCard(activity, wfProject, onAction) {
   main.className = 'campaign-main';
   const nameEl = document.createElement('h3');
   nameEl.className = 'campaign-name';
-  nameEl.textContent = activity.name;
-  const descEl = document.createElement('p');
-  descEl.className = 'campaign-desc';
-  descEl.textContent = activity.description || generateDesc(activity);
-  main.append(nameEl, descEl);
+  const nameLabel = document.createElement('span');
+  nameLabel.className = 'campaign-field-label';
+  nameLabel.textContent = 'Activity Name:';
+  const nameValue = document.createElement('span');
+  nameValue.className = 'campaign-field-value';
+  nameValue.textContent = activity.name;
+  nameEl.append(nameLabel, nameValue);
+
+  const locEl = document.createElement('p');
+  locEl.className = 'campaign-location';
+  const locLabel = document.createElement('span');
+  locLabel.className = 'campaign-field-label';
+  locLabel.textContent = 'Activation Location:';
+  const locValue = document.createElement('span');
+  locValue.className = 'campaign-field-value';
+  locValue.textContent = getActivationLocation(activity);
+  locEl.append(locLabel, locValue);
+
+  main.append(nameEl, locEl);
 
   // ── Right: status + actions
   const side = document.createElement('div');
@@ -289,11 +310,6 @@ function buildCampaignCard(activity, wfProject, onAction) {
   card.addEventListener('click', () => onAction('detail', activity, wfProject));
 
   return card;
-}
-
-function generateDesc(activity) {
-  const type = activity.type === 'xt' ? 'Experience Targeting' : activity.type === 'ab' ? 'A/B Test' : 'Campaign';
-  return `${type} activity targeting ${activity.modifiedAt ? 'customers' : 'site visitors'} with personalized content to drive engagement and conversions.`;
 }
 
 // ── Kebab menu ─────────────────────────────────────────────────────────────────
@@ -930,7 +946,7 @@ async function buildApp(activities, wfProjects, sdk) {
   const rail = document.createElement('div');
   rail.className = 'rail';
   rail.innerHTML = `
-    <div class="rail-logo" title="DuPont CMS Tool">DuPont</div>
+    <div class="rail-logo" title="DuPont Personalization Tool">DuPont</div>
     <div class="rail-divider"></div>
     <div class="rail-icon active" title="Campaigns">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -953,7 +969,7 @@ async function buildApp(activities, wfProjects, sdk) {
 
   const titleWrap = document.createElement('div');
   titleWrap.className = 'header-title-wrap';
-  titleWrap.innerHTML = `<h1 class="header-title">CMC Management Tool</h1><div class="header-title-underline"></div>`;
+  titleWrap.innerHTML = `<h1 class="header-title">Personalization Tool</h1><div class="header-title-underline"></div>`;
 
   const headerActions = document.createElement('div');
   headerActions.className = 'header-actions';

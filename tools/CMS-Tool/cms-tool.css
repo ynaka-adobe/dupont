@@ -345,15 +345,29 @@ body {
   margin: 0 0 6px;
 }
 
-.campaign-desc {
+.campaign-location {
   font-size: 13px;
   color: #666;
   line-height: 1.55;
   margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+}
+
+.campaign-field-label {
+  color: #666;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.campaign-name .campaign-field-label {
+  font-size: 14px;
+}
+
+.campaign-field-value {
+  color: #111;
+}
+
+.campaign-location .campaign-field-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .campaign-status {
