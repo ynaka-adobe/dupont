@@ -1,3 +1,5 @@
+import { personaId, findPersonaFilterCell, matchesPersona } from '../../scripts/persona.js';
+
 /**
  * Ensures a slide has a dedicated image cell as its first child and a
  * content cell as its last child. Authors sometimes place the image and
@@ -17,6 +19,18 @@ function normalizeSlide(slide) {
 }
 
 export default async function decorate(block) {
+  const pid = personaId();
+
+  // Filter before anything else: the persona cell would otherwise hide
+  // normalizeSlide's authored shape, and the dots/active slide must count
+  // only the slides that survive.
+  [...block.children].forEach((slide) => {
+    const filterCell = findPersonaFilterCell([...slide.children]);
+    if (!filterCell) return;
+    filterCell.remove();
+    if (!matchesPersona(filterCell, pid)) slide.remove();
+  });
+
   const slides = [...block.children];
   if (slides.length === 0) return;
 

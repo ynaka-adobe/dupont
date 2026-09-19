@@ -1,3 +1,5 @@
+import { personaId, findPersonaFilterCell, matchesPersona } from '../../scripts/persona.js';
+
 // Persona-tailored card CTA labels + optional per-persona body copy.
 // Default (no persona) keeps the authored label and description.
 const PERSONA_LABELS = {
@@ -6,12 +8,6 @@ const PERSONA_LABELS = {
   3: 'Sustainability & compliance',
   4: 'Explore & learn',
 };
-
-function personaId() {
-  const d = window.demoProfile || {};
-  if (d.persona !== undefined && d.persona !== null && d.persona !== '') return String(d.persona);
-  return new URLSearchParams(window.location.search).get('p') || '';
-}
 
 // An optional extra card cell holds per-persona copy, one line each:
 //   1: Technical-focused blurb
@@ -49,6 +45,16 @@ export default function decorate(block) {
   [...block.children].forEach((row) => {
     const cells = [...row.children];
     const nonImage = cells.filter((d) => !isImageCell(d));
+
+    // Detect the persona-filter column first: it is always last and holds
+    // nothing but persona tokens, so the overrides rule below can't eat it.
+    const filterCell = findPersonaFilterCell(nonImage);
+    if (filterCell) {
+      filterCell.remove();
+      nonImage.pop();
+      if (!matchesPersona(filterCell, pid)) return;
+    }
+
     // 2+ non-image cells → the last one is the persona-overrides column.
     let overrides = null;
     if (nonImage.length >= 2) {
