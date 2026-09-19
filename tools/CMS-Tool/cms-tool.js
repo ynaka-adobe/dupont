@@ -203,7 +203,7 @@ function buildCampaignCard(activity, wfProject, onAction) {
   locEl.className = 'campaign-location';
   const locLabel = document.createElement('span');
   locLabel.className = 'campaign-field-label';
-  locLabel.textContent = 'Activation Location:';
+  locLabel.textContent = 'Activity Location:';
   const locValue = document.createElement('span');
   locValue.className = 'campaign-field-value';
   const knownLocation = getActivationLocation(activity);
