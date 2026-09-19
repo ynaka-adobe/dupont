@@ -390,8 +390,10 @@ function renderActionBar(onActivityCreated) {
         + `<tr><td>activity</td><td>${activity.id}</td></tr>`
         + `</tbody></table>`;
 
-      // Send both blocks to be inserted into the page
-      daContext.actions.sendHTML(offerBlockHtml + metadataBlockHtml);
+      // Separate the two tables with an empty paragraph. Adjacent <table>
+      // elements can be merged into one by the DA editor on paste, which would
+      // collapse the target-offer and metadata blocks into a single block.
+      daContext.actions.sendHTML(`${offerBlockHtml}<p></p>${metadataBlockHtml}`);
 
       insertBtn.textContent = 'Inserted!';
       setTimeout(() => {
