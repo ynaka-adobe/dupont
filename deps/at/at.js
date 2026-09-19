@@ -37,6 +37,18 @@ function loadScript(src) {
   });
 }
 
+/**
+ * getMetadata() joins duplicate <meta> tags with ', '. head.html and a page's
+ * own metadata block can both define these, so take the first usable URL.
+ * @param {string} name
+ */
+function firstMetaUrl(name) {
+  return (getMetadata(name) || '')
+    .split(',')
+    .map((s) => s.trim())
+    .find(Boolean) || '';
+}
+
 function installStub() {
   if (!window.adobe) window.adobe = {};
   if (window.adobe.target?.getOffers) return;
@@ -50,8 +62,8 @@ function installStub() {
 async function ensureRealAtJs() {
   if (window.adobe?.target?.getOffers) return;
 
-  const atJs = getMetadata('target-at-js')?.trim();
-  const visitor = getMetadata('target-visitor-js')?.trim();
+  const atJs = firstMetaUrl('target-at-js');
+  const visitor = firstMetaUrl('target-visitor-js');
 
   if (!atJs) {
     installStub();
