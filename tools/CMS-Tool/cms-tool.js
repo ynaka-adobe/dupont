@@ -43,6 +43,20 @@ async function fetchTargetActivities() {
   return json.activities ?? [];
 }
 
+const activityLocationCache = new Map();
+
+async function fetchTargetActivityLocation(activityId, activityType) {
+  const key = `${activityId}:${activityType}`;
+  if (activityLocationCache.has(key)) return activityLocationCache.get(key);
+  const promise = targetFetch({
+    resource: 'activity', id: activityId, type: activityType, version: 'v3',
+  })
+    .then((json) => json?.locations?.mboxes?.[0]?.name || '')
+    .catch(() => '');
+  activityLocationCache.set(key, promise);
+  return promise;
+}
+
 async function fetchTargetReporting(activityId) {
   try {
     const json = await targetFetch({ resource: 'reporting', activityId });
@@ -192,7 +206,15 @@ function buildCampaignCard(activity, wfProject, onAction) {
   locLabel.textContent = 'Activation Location:';
   const locValue = document.createElement('span');
   locValue.className = 'campaign-field-value';
-  locValue.textContent = getActivationLocation(activity);
+  const knownLocation = getActivationLocation(activity);
+  if (knownLocation && knownLocation !== '\u2014') {
+    locValue.textContent = knownLocation;
+  } else {
+    locValue.textContent = '\u2026';
+    fetchTargetActivityLocation(activity.id, activity.type).then((mbox) => {
+      locValue.textContent = mbox || '\u2014';
+    });
+  }
   locEl.append(locLabel, locValue);
 
   main.append(nameEl, locEl);
