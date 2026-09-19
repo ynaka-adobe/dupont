@@ -622,7 +622,7 @@ const CAMPAIGN_VARIANTS = {
         <rect x="2" y="14" width="96" height="30" fill="#1473e6" rx="2"/>
         <rect x="20" y="48" width="60" height="4" fill="#ddd" rx="1"/>
         <rect x="28" y="55" width="44" height="4" fill="#ddd" rx="1"/>
-        <rect x="35" y="62" width="30" height="6" fill="#ffcb00" rx="2"/>
+        <rect x="35" y="62" width="30" height="6" fill="#E4001C" rx="2"/>
         <rect x="2" y="71" width="96" height="7" fill="#999" rx="2"/>
       </svg>`,
     },
@@ -638,7 +638,7 @@ const CAMPAIGN_VARIANTS = {
         <rect x="54" y="18" width="40" height="4" fill="#ddd" rx="1"/>
         <rect x="54" y="25" width="32" height="4" fill="#ddd" rx="1"/>
         <rect x="54" y="32" width="36" height="4" fill="#ddd" rx="1"/>
-        <rect x="54" y="44" width="24" height="8" fill="#ffcb00" rx="2"/>
+        <rect x="54" y="44" width="24" height="8" fill="#E4001C" rx="2"/>
         <rect x="2" y="64" width="96" height="10" fill="#999" rx="2"/>
         <text x="50" y="72" font-size="5" fill="#fff" text-anchor="middle" dominant-baseline="middle" font-family="Arial">FOOTER</text>
       </svg>`,
@@ -671,7 +671,7 @@ const CAMPAIGN_VARIANTS = {
         <text x="50" y="10" font-size="5" fill="#fff" text-anchor="middle" dominant-baseline="middle" font-family="Arial">TOP NAV</text>
         <rect x="2" y="14" width="96" height="40" fill="#d7373f" rx="2"/>
         <text x="50" y="36" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle" dominant-baseline="middle" font-family="Arial">FLASH SALE</text>
-        <rect x="25" y="59" width="50" height="7" fill="#ffcb00" rx="2"/>
+        <rect x="25" y="59" width="50" height="7" fill="#E4001C" rx="2"/>
         <rect x="2" y="70" width="96" height="8" fill="#999" rx="2"/>
       </svg>`,
     },
@@ -930,7 +930,7 @@ async function buildApp(activities, wfProjects, sdk) {
   const rail = document.createElement('div');
   rail.className = 'rail';
   rail.innerHTML = `
-    <div class="rail-logo" title="CMC Tool">CAT</div>
+    <div class="rail-logo" title="DuPont CMS Tool">DuPont</div>
     <div class="rail-divider"></div>
     <div class="rail-icon active" title="Campaigns">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">

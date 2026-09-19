@@ -22,7 +22,7 @@ body {
 
 /* ── Left rail ───────────────────────────────────────────────── */
 .rail {
-  background: #1a1a1a;
+  background: #E4001C;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,15 +34,15 @@ body {
 .rail-logo {
   width: 36px;
   height: 36px;
-  background: #ffcb00;
+  background: #fff;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
-  font-size: 15px;
-  color: #1a1a1a;
-  letter-spacing: -1px;
+  font-size: 9px;
+  color: #E4001C;
+  letter-spacing: -.2px;
   flex-shrink: 0;
   cursor: pointer;
 }
@@ -102,7 +102,7 @@ body {
 .header-title-underline {
   width: 48px;
   height: 3px;
-  background: #ffcb00;
+  background: #E4001C;
   border-radius: 2px;
   margin-top: 4px;
 }
@@ -118,7 +118,7 @@ body {
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: #1a1a1a;
+  background: #E4001C;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -129,7 +129,7 @@ body {
   transition: background .12s;
 }
 
-.btn-new-campaign:hover { background: #333; }
+.btn-new-campaign:hover { background: #b80016; }
 .btn-new-campaign svg { width: 14px; height: 14px; }
 
 .header-icon-btn {
@@ -156,7 +156,7 @@ body {
   right: 6px;
   width: 7px;
   height: 7px;
-  background: #ffcb00;
+  background: #E4001C;
   border-radius: 50%;
   border: 1.5px solid #fff;
 }
@@ -212,8 +212,8 @@ body {
 
 .btn-search {
   padding: 10px 22px;
-  background: #ffcb00;
-  color: #1a1a1a;
+  background: #E4001C;
+  color: #fff;
   border: none;
   border-radius: 4px;
   font-size: 14px;
@@ -223,7 +223,7 @@ body {
   transition: background .12s;
 }
 
-.btn-search:hover { background: #e6b800; }
+.btn-search:hover { background: #b80016; }
 
 /* ── Tab bar + sort ──────────────────────────────────────────── */
 .tab-sort-bar {
@@ -261,8 +261,8 @@ body {
 .tab-btn:hover { color: #333; }
 
 .tab-btn.active {
-  color: #111;
-  border-bottom-color: #111;
+  color: #E4001C;
+  border-bottom-color: #E4001C;
 }
 
 .tab-count {
@@ -271,7 +271,7 @@ body {
   justify-content: center;
   width: 20px;
   height: 20px;
-  background: #111;
+  background: #E4001C;
   color: #fff;
   border-radius: 50%;
   font-size: 11px;
@@ -539,7 +539,7 @@ body {
   width: 28px;
   height: 28px;
   border: 3px solid #e5e5e5;
-  border-top-color: #ffcb00;
+  border-top-color: #E4001C;
   border-radius: 50%;
   animation: spin .7s linear infinite;
 }
@@ -602,12 +602,12 @@ body {
 .modal-icon {
   width: 38px;
   height: 38px;
-  background: #1a1a1a;
+  background: #E4001C;
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffcb00;
+  color: #fff;
   flex-shrink: 0;
 }
 
@@ -681,7 +681,7 @@ body {
 
 .modal-btn-primary {
   padding: 8px 22px;
-  background: #1a1a1a;
+  background: #E4001C;
   color: #fff;
   border: none;
   border-radius: 20px;
@@ -692,7 +692,7 @@ body {
   transition: background .12s;
 }
 
-.modal-btn-primary:hover { background: #333; }
+.modal-btn-primary:hover { background: #b80016; }
 .modal-btn-primary:disabled { background: #aaa; cursor: not-allowed; }
 
 .modal-btn-cancel {
@@ -916,12 +916,12 @@ body {
 }
 
 .type-option-row:hover { border-color: #aaa; background: #fafafa; }
-.type-option-row.selected { border-color: #ffcb00; background: #fffbea; }
+.type-option-row.selected { border-color: #E4001C; background: #fff5f6; }
 
 .type-option-row input[type="radio"] {
   width: 16px;
   height: 16px;
-  accent-color: #ffcb00;
+  accent-color: #E4001C;
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -952,8 +952,8 @@ body {
 .variant-card:hover { border-color: #aaa; background: #fafafa; }
 
 .variant-card.selected {
-  border-color: #ffcb00;
-  background: #fffbea;
+  border-color: #E4001C;
+  background: #fff5f6;
 }
 
 .variant-card-name {
@@ -987,7 +987,7 @@ body {
 .variant-card-radio {
   width: 16px;
   height: 16px;
-  accent-color: #ffcb00;
+  accent-color: #E4001C;
   cursor: pointer;
   flex-shrink: 0;
   pointer-events: none;
@@ -1018,7 +1018,7 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 
-.toast--success { border-left: 4px solid #ffcb00; }
+.toast--success { border-left: 4px solid #E4001C; }
 .toast--error   { border-left: 4px solid #d7373f; background: #2d0000; }
 
 /* ── Connect / auth screen ───────────────────────────────────── */
