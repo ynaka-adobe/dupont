@@ -54,6 +54,39 @@ export async function loadTarget() {
 }
 
 /**
+ * at.js getOffer responses come back in several shapes: a bare array of
+ * actions, or an object wrapping them under `actions`.
+ * @param {unknown} offers
+ * @returns {Array<Record<string, unknown>>}
+ */
+function toTargetActions(offers) {
+  if (Array.isArray(offers)) return offers.filter((a) => a && typeof a === 'object');
+  if (offers && typeof offers === 'object' && Array.isArray(offers.actions)) {
+    return offers.actions.filter((a) => a && typeof a === 'object');
+  }
+  return [];
+}
+
+/**
+ * Fallback renderer for action-form offers when applyOffer does not paint.
+ * Only handles `setContent` against the already matched element.
+ * @param {Element} el
+ * @param {unknown} offers
+ * @returns {boolean} whether content was applied
+ */
+function applySetContentActions(el, offers) {
+  const actions = toTargetActions(offers);
+  let applied = false;
+  actions.forEach((action) => {
+    if (action.action !== 'setContent' || typeof action.content !== 'string') return;
+    // Content originates from the Target delivery response for this mbox.
+    el.innerHTML = action.content;
+    applied = true;
+  });
+  return applied;
+}
+
+/**
  * Legacy mbox flow (getOffer + applyOffer). Runs after blocks render.
  * Opt-in via meta target-mbox-hero and optional target-mbox-hero-selector.
  */
@@ -87,7 +120,17 @@ export async function applyTargetHeroMboxIfConfigured() {
           resolve();
           return;
         }
-        t.applyOffer({ mbox, selector: match.selector, offer: offers });
+        try {
+          t.applyOffer({ mbox, selector: match.selector, offer: offers });
+        } catch (e) {
+          logTargetError(e, match.el);
+        }
+        // applyOffer silently ignores some action-form payloads; if the
+        // target element is still empty, render setContent actions directly.
+        const current = document.querySelector(match.selector) || match.el;
+        if (current && !current.innerHTML.trim()) {
+          applySetContentActions(current, offers);
+        }
         resolve();
       },
       error: resolve,
