@@ -10,3 +10,8 @@ helix-importer-ui
 tools/target/config.json
 
 .aio
+
+.env
+.env.*
+!.env.example
+.claude/
