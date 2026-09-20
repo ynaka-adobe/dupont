@@ -1,4 +1,5 @@
 import { getMetadata } from '../../scripts/aem.js';
+import { decorateOfferContent } from '../../scripts/target.js';
 
 /**
  * Adobe Target HTML offer slot.
@@ -74,6 +75,7 @@ async function applyMboxContent(slot, mboxName) {
     if (html == null || html === '') return;
 
     slot.innerHTML = typeof html === 'string' ? html : '';
+    await decorateOfferContent(slot);
   } catch (ex) {
     // eslint-disable-next-line no-console
     console.error(ex);

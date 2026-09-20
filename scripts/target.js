@@ -1,4 +1,4 @@
-import { getMetadata } from './aem.js';
+import { decorateBlock, getMetadata, loadBlock } from './aem.js';
 
 /** AEM Universal Editor iframe; skip Target so at.js does not fight UE/CSP. */
 export function isUePreviewHost(hostname = window.location.hostname) {
@@ -12,6 +12,46 @@ export function isUePreviewHost(hostname = window.location.hostname) {
 function logTargetError(e, el) {
   // eslint-disable-next-line no-console
   console.error('[target]', e, el);
+}
+
+/**
+ * Target offers are injected as raw HTML, so EDS block decoration never runs on
+ * them. Find the block roots in freshly injected content and decorate + load
+ * them the same way `decorateBlocks`/`loadBlock` would for authored content.
+ *
+ * `decorateBlocks` is not usable here because it only matches
+ * `div.section > div > div`, and injected offer content has no `.section`
+ * ancestor.
+ * @param {Element} [container] element whose innerHTML was just replaced
+ * @returns {Promise<void>}
+ */
+export async function decorateOfferContent(container) {
+  if (!container || typeof container.querySelectorAll !== 'function') return;
+
+  const candidates = [...container.querySelectorAll('div[class]')].filter((el) => {
+    const blockName = el.classList[0];
+    if (!blockName) return false;
+    if (el.classList.contains('block')) return false;
+    if (blockName === 'section' || blockName.endsWith('-wrapper')) return false;
+    // decorateBlock writes to block.parentElement without a null check.
+    return !!el.parentElement;
+  });
+
+  // Never decorate a block nested inside another block: the inner divs of an
+  // offer's hero are content, not blocks of their own.
+  const roots = candidates.filter((el) => {
+    if (candidates.some((other) => other !== el && other.contains(el))) return false;
+    return !el.parentElement.closest('.block');
+  });
+
+  await Promise.all(roots.map(async (el) => {
+    try {
+      decorateBlock(el);
+      await loadBlock(el);
+    } catch (e) {
+      logTargetError(e, el);
+    }
+  }));
 }
 
 export async function loadTarget() {
@@ -39,14 +79,19 @@ export async function loadTarget() {
         response: offers,
       });
     } else {
-      offers?.execute?.pageLoad?.options?.forEach((opt) => {
+      const options = offers?.execute?.pageLoad?.options || [];
+      await Promise.all(options.map(async (opt) => {
         const payload = opt?.content?.[0];
         if (!payload) return;
         const { cssSelector, content } = payload;
         if (!cssSelector || content == null) return;
         const el = document.querySelector(cssSelector);
-        if (el) el.outerHTML = content;
-      });
+        if (!el) return;
+        // outerHTML replaces the node, so decorate from the surviving parent.
+        const parent = el.parentElement;
+        el.outerHTML = content;
+        await decorateOfferContent(parent);
+      }));
     }
   } catch (e) {
     logTargetError(e, document.body);
@@ -72,9 +117,9 @@ function toTargetActions(offers) {
  * Only handles `setContent` against the already matched element.
  * @param {Element} el
  * @param {unknown} offers
- * @returns {boolean} whether content was applied
+ * @returns {Promise<boolean>} whether content was applied
  */
-function applySetContentActions(el, offers) {
+async function applySetContentActions(el, offers) {
   const actions = toTargetActions(offers);
   let applied = false;
   actions.forEach((action) => {
@@ -83,6 +128,7 @@ function applySetContentActions(el, offers) {
     el.innerHTML = action.content;
     applied = true;
   });
+  if (applied) await decorateOfferContent(el);
   return applied;
 }
 
@@ -129,7 +175,8 @@ export async function applyTargetHeroMboxIfConfigured() {
         // target element is still empty, render setContent actions directly.
         const current = document.querySelector(match.selector) || match.el;
         if (current && !current.innerHTML.trim()) {
-          applySetContentActions(current, offers);
+          applySetContentActions(current, offers).then(resolve, resolve);
+          return;
         }
         resolve();
       },
