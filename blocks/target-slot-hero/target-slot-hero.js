@@ -1,11 +1,19 @@
 // Persona hero slot — personalizes CLIENT-SIDE by calling the Adobe Target
-// Delivery API for the `target-slot-hero` mbox and rendering the returned offer.
+// Delivery API for the configured mbox and rendering the returned offer.
 // (Ported from the Fastly edge function so personalization no longer needs the
 // edge; wherever this block is authored on a page, the hero appears.)
 
+import { getMetadata } from '../../scripts/aem.js';
+
 const TARGET_CLIENT = 'acsmarketing';
-const TARGET_MBOX = 'target-slot-hero';
+// The mbox the XT activity runs on. Authors can repoint this per page with a
+// `target-slot-mbox` metadata entry when the activity moves to another mbox.
+const DEFAULT_TARGET_MBOX = 'target-dupont-mbox';
 const ENDPOINT = `https://${TARGET_CLIENT}.tt.omtrdc.net/rest/v1/delivery`;
+
+function getTargetMbox() {
+  return getMetadata('target-slot-mbox')?.trim() || DEFAULT_TARGET_MBOX;
+}
 
 const PERSONA = {
   1: { color: '#0072ce', color2: '#004a86' },
@@ -101,7 +109,7 @@ async function targetDeliver(profile) {
     experienceCloud: { analytics: { logging: 'server_side' } },
     execute: {
       pageLoad: { profileParameters: profileParams(profile) },
-      mboxes: [{ index: 0, name: TARGET_MBOX, profileParameters: profileParams(profile) }],
+      mboxes: [{ index: 0, name: getTargetMbox(), profileParameters: profileParams(profile) }],
     },
   };
   const resp = await fetch(`${ENDPOINT}?client=${TARGET_CLIENT}&sessionId=${encodeURIComponent(sessionId)}`, {
