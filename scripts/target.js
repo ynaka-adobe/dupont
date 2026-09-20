@@ -38,10 +38,14 @@ export async function decorateOfferContent(container) {
   });
 
   // Never decorate a block nested inside another block: the inner divs of an
-  // offer's hero are content, not blocks of their own.
+  // offer's hero are content, not blocks of their own. Scope that check to the
+  // container — the container itself is often an already-decorated block (e.g.
+  // `.target-offer block`) and must not disqualify the content injected into it.
   const roots = candidates.filter((el) => {
     if (candidates.some((other) => other !== el && other.contains(el))) return false;
-    return !el.parentElement.closest('.block');
+    const ancestorBlock = el.parentElement.closest('.block');
+    if (!ancestorBlock || ancestorBlock === container) return true;
+    return !container.contains(ancestorBlock);
   });
 
   await Promise.all(roots.map(async (el) => {
@@ -62,10 +66,14 @@ export async function decorateOfferContent(container) {
  */
 function decorateRenderedOffers() {
   const containers = new Set();
-  // at.js may mark either a wrapper or the block element itself, so scan from
-  // the marker's parent to cover both shapes.
   document.querySelectorAll('.at-element-marker').forEach((el) => {
-    containers.add(el.parentElement || el);
+    // The marked element is the offer container in the common case.
+    containers.add(el);
+    // at.js may instead mark the block element itself, which only its parent
+    // can reach; the marker being undecorated is what distinguishes that shape.
+    if (el.parentElement && !el.classList.contains('block') && !el.dataset.blockStatus) {
+      containers.add(el.parentElement);
+    }
   });
   document.querySelectorAll('.target-offer__slot, .target-offer').forEach((el) => {
     containers.add(el);
