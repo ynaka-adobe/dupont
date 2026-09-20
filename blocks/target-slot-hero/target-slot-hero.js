@@ -6,13 +6,17 @@
 import { getMetadata } from '../../scripts/aem.js';
 
 const TARGET_CLIENT = 'acsmarketing';
-// The mbox the XT activity runs on. Authors can repoint this per page with a
-// `target-slot-mbox` metadata entry when the activity moves to another mbox.
-const DEFAULT_TARGET_MBOX = 'target-dupont-mbox';
+// The mbox the persona-hero XT activity runs on. Authors can repoint this per
+// page with a `target-slot-mbox` metadata entry if the activity ever moves.
+const DEFAULT_TARGET_MBOX = 'target-slot-hero';
 const ENDPOINT = `https://${TARGET_CLIENT}.tt.omtrdc.net/rest/v1/delivery`;
 
+// getMetadata() joins duplicate <meta> tags with ', ', so take the first entry
+// rather than the concatenation (same guard as firstMetaUrl() in deps/at/at.js).
 function getTargetMbox() {
-  return getMetadata('target-slot-mbox')?.trim() || DEFAULT_TARGET_MBOX;
+  const raw = getMetadata('target-slot-mbox') || '';
+  const first = raw.split(',').map((s) => s.trim()).find(Boolean);
+  return first || DEFAULT_TARGET_MBOX;
 }
 
 const PERSONA = {
