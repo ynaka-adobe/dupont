@@ -31,7 +31,7 @@ export async function decorateOfferContent(container) {
   const candidates = [...container.querySelectorAll('div[class]')].filter((el) => {
     const blockName = el.classList[0];
     if (!blockName) return false;
-    if (el.classList.contains('block')) return false;
+    if (el.classList.contains('block') || el.dataset.blockStatus) return false;
     if (blockName === 'section' || blockName.endsWith('-wrapper')) return false;
     // decorateBlock writes to block.parentElement without a null check.
     return !!el.parentElement;
@@ -52,6 +52,35 @@ export async function decorateOfferContent(container) {
       logTargetError(e, el);
     }
   }));
+}
+
+/**
+ * at.js renders most offers straight into the DOM itself, bypassing both the
+ * target-offer block and the setContent fallback, so nothing above ever sees
+ * that content. Hook the at.js render lifecycle and decorate whatever it just
+ * painted. at.js marks the elements it touched with `at-element-marker`.
+ */
+function decorateRenderedOffers() {
+  const containers = new Set();
+  // at.js may mark either a wrapper or the block element itself, so scan from
+  // the marker's parent to cover both shapes.
+  document.querySelectorAll('.at-element-marker').forEach((el) => {
+    containers.add(el.parentElement || el);
+  });
+  document.querySelectorAll('.target-offer__slot, .target-offer').forEach((el) => {
+    containers.add(el);
+  });
+  return Promise.all([...containers].map((el) => decorateOfferContent(el)));
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('at-content-rendering-succeeded', () => {
+    try {
+      decorateRenderedOffers().catch((e) => logTargetError(e, document.body));
+    } catch (e) {
+      logTargetError(e, document.body);
+    }
+  });
 }
 
 export async function loadTarget() {
