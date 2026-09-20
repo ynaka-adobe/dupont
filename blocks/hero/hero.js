@@ -32,7 +32,12 @@ export default async function decorate(block) {
   });
 
   const slides = [...block.children];
-  if (slides.length === 0) return;
+  if (slides.length === 0) {
+    // .hero has a fixed height and a black background, so an empty block would
+    // render as a large black rectangle.
+    block.style.display = 'none';
+    return;
+  }
 
   slides.forEach((slide, i) => {
     normalizeSlide(slide);
