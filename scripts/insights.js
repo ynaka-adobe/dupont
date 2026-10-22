@@ -29,7 +29,7 @@ import {
 } from './signals.js';
 import { personaId, personaName } from './persona.js';
 
-const STORAGE_KEY = 'intl-insights';
+const STORAGE_KEY = 'dupont-insights';
 const FEED_LIMIT = 60;
 
 /* Event → display category. Keeps the summary honest: every counted event

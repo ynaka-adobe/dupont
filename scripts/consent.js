@@ -1,5 +1,5 @@
 /**
- * consent.js — site-wide cookie consent for the International EDS site.
+ * consent.js — site-wide cookie consent for the DuPont EDS site.
  *
  * Consent is the on-switch for analytics: scripts/analytics.js queues every
  * event until `analytics` consent is granted, then flushes the queue. Revoking
@@ -16,8 +16,8 @@
  */
 import { loadCSS } from './aem.js';
 
-const STORAGE_KEY = 'intl-consent';
-const COOKIE_NAME = 'intl_consent';
+const STORAGE_KEY = 'dupont-consent';
+const COOKIE_NAME = 'dupont_consent';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 180; // 180 days
 const VERSION = 1;
 
@@ -60,7 +60,7 @@ const VARIANTS = {
     id: 'default',
     interstitial: false,
     eyebrow: 'Your privacy choices',
-    heading: 'We use cookies to improve your International experience',
+    heading: 'We use cookies to improve your DuPont experience',
     intro: 'We use cookies and similar technologies to keep the site reliable, measure how our '
       + 'content performs, and personalize what you see. You are in control — choose what '
       + 'you are comfortable with, and change it any time.',
@@ -71,7 +71,7 @@ const VARIANTS = {
     id: 'nudge',
     interstitial: true,
     eyebrow: 'Before you explore',
-    heading: 'Help us make international.com work better for you',
+    heading: 'Help us make dupont.com work better for you',
     intro: 'Say yes to cookies and we can show you the products, guides and offers that are '
       + 'actually relevant to your work — and skip the ones that are not. We never sell your '
       + 'data, and you can change your mind from any page in two clicks.',

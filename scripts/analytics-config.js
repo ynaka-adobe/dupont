@@ -29,7 +29,7 @@ export const ANALYTICS_CONFIG = {
 
   /**
    * Adobe datastream ID. PASTE HERE to switch the site onto the Web SDK. ◀──
-   * International has no datastream configured yet, so this stays empty and the
+   * DuPont has no datastream configured yet, so this stays empty and the
    * Web SDK is never loaded.
    */
   edgeConfigId: '',
@@ -43,13 +43,13 @@ export const ANALYTICS_CONFIG = {
   /* ── mode 2: AppMeasurement → existing Adobe Analytics / Workspace ─────── */
 
   /**
-   * Adobe Analytics report suite ID: the duplicate International
+   * Adobe Analytics report suite ID: the DuPont
    * report suite (or set the
    * `analytics-report-suite-id` meta). If empty the site runs in `debug`
    * mode (data layer only, nothing is sent). With the RSID and tracking server
    * set, the site sends real hits into Analysis Workspace.
    */
-  reportSuiteId: 'acsmarketinginternational',
+  reportSuiteId: 'acsmarketingdupont',
 
   /** Analytics tracking server for that org. */
   trackingServer: 'acsmarketing.sc.omtrdc.net',

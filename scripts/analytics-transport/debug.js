@@ -35,7 +35,7 @@ export default function createDebugTransport(config) {
       // eslint-disable-next-line no-console
       console.info(
         '%c[analytics] debug transport active%c — no credentials configured, nothing is sent to Adobe.\n'
-        + 'Events land in window.adobeDataLayer. Try intlAnalytics.dump() for the full table.',
+        + 'Events land in window.adobeDataLayer. Try dupontAnalytics.dump() for the full table.',
         'color:#d10411;font-weight:700',
         'color:inherit',
       );

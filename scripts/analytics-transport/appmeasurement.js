@@ -60,7 +60,7 @@
  */
 
 const JS_VERSION = 'JS-2.22.0';
-const VISITOR_KEY = 'intl-analytics-vid';
+const VISITOR_KEY = 'dupont-analytics-vid';
 
 /** data layer event → Analytics success event + human-readable link name. */
 const EVENT_MAP = {
@@ -190,7 +190,7 @@ export default function createAppMeasurementTransport(config) {
   let mode = 'beacon';
   let s = null;
   let visitor = null;
-  /** Last hit URL, exposed for demos/QA (`intlAnalytics.lastHit`). */
+  /** Last hit URL, exposed for demos/QA (`dupontAnalytics.lastHit`). */
   let lastHit = null;
 
   /** Reuse at.js's ECID when Target is on the page; never create a second one. */

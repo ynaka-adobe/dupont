@@ -509,7 +509,7 @@ export default async function initAnalytics() {
   startCollection();
 
   // Small surface for demos / debugging from the console.
-  window.intlAnalytics = {
+  window.dupontAnalytics = {
     track,
     config,
     get transport() { return transport?.name || 'not started'; },
