@@ -9,6 +9,23 @@ const FILTER_RE = /^[1-4](\s*[,\s]\s*[1-4])*$/;
 // every row away.
 const VALID_PERSONA_RE = /^[1-4]$/;
 
+// Display names for the four demo personas, kept in sync with the badge
+// labels in head.html.
+export const PERSONA_NAMES = {
+  1: 'Technical Evaluator',
+  2: 'Business Decision Maker',
+  3: 'Procurement Manager',
+  4: 'Industry Researcher',
+};
+
+/**
+ * @param {string} pid persona id, e.g. from personaId()
+ * @returns {string} display name, or '' when pid is unknown/empty
+ */
+export function personaName(pid) {
+  return PERSONA_NAMES[pid] || '';
+}
+
 /**
  * @returns {string} active persona id, or '' when no persona is active.
  * Invalid or out-of-range personas (e.g. ?p=0, ?p=9, ?p=abc) also return '',
